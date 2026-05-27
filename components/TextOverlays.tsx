@@ -1,6 +1,6 @@
 'use client';
 
-import { RefObject, useRef } from 'react';
+import { RefObject } from 'react';
 import { useScroll, useTransform, motion, useSpring, MotionValue } from 'framer-motion';
 
 // ─── Clip-reveal wrapper ─────────────────────────────────────────────────────
@@ -68,8 +68,6 @@ interface TextOverlaysProps {
 }
 
 export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlaysProps) {
-  // Target the 800vh hero zone — scrollYProgress 0→1 maps exactly to that container.
-  // This ensures all fixed overlays are mathematically confined to the hero scroll range.
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end end'],

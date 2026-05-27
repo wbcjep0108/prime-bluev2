@@ -8,6 +8,12 @@ interface HeroCanvasProps {
   onLoaded?: () => void;
 }
 
+const frameCount = 192;
+// On mobile: load every 2nd frame to halve memory pressure
+const isMobile = () =>
+  typeof navigator !== 'undefined' &&
+  /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
 export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,47 +25,90 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 200,
     damping: 40,
-    restDelta: 0.001
+    restDelta: 0.001,
   });
 
-  const frameCount = 192;
-  const bitmapsRef = useRef<ImageBitmap[]>([]);
+  const bitmapsRef = useRef<(ImageBitmap | null)[]>(new Array(frameCount).fill(null));
   const [isLoaded, setIsLoaded] = useState(false);
+  const mountedRef = useRef(true);
+  const rafRef = useRef<number>(0);
 
+  // ── Frame loading ──────────────────────────────────────────────────────────
   useEffect(() => {
-    let isCancelled = false;
+    mountedRef.current = true;
+    const step = isMobile() ? 2 : 1; // halve frame count on mobile
     let loaded = 0;
 
-    const allPromises = Array.from({ length: frameCount }, async (_, i) => {
-      const paddedIndex = (i + 1).toString().padStart(3, '0');
-      try {
-        const res = await fetch(`/images/sequence/ezgif-frame-${paddedIndex}.jpg`);
-        const blob = await res.blob();
-        const bitmap = await createImageBitmap(blob);
-        if (!isCancelled) {
-          bitmapsRef.current[i] = bitmap;
-          loaded++;
-          if (loaded % 16 === 0 || loaded === frameCount) {
-            const pct = Math.round((loaded / frameCount) * 100);
-            onProgress?.(pct);
-          }
-        }
-      } catch (e) {}
-    });
+    // Build list of frame indices to actually load
+    const indices: number[] = [];
+    for (let i = 0; i < frameCount; i += step) indices.push(i);
+    const total = indices.length;
 
-    Promise.all(allPromises).then(() => {
-      if (!isCancelled) {
+    // Fetch in small concurrent batches to avoid flooding mobile network
+    const BATCH = 8;
+    let batchStart = 0;
+
+    const loadNext = async () => {
+      if (!mountedRef.current) return;
+      const batch = indices.slice(batchStart, batchStart + BATCH);
+      batchStart += BATCH;
+      if (batch.length === 0) return;
+
+      await Promise.all(
+        batch.map(async (i) => {
+          const padded = (i + 1).toString().padStart(3, '0');
+          try {
+            const res = await fetch(`/images/sequence/ezgif-frame-${padded}.jpg`);
+            if (!mountedRef.current) return;
+            const blob = await res.blob();
+            const bm = await createImageBitmap(blob);
+            if (!mountedRef.current) {
+              bm.close();
+              return;
+            }
+            bitmapsRef.current[i] = bm;
+            // Fill skipped neighbour so frame lookup always finds something
+            if (step === 2 && i + 1 < frameCount) {
+              bitmapsRef.current[i + 1] = bm;
+            }
+          } catch {
+            // Ignore network errors — frame stays null, canvas skips it
+          }
+          loaded++;
+          if (loaded % 16 === 0 || loaded === total) {
+            onProgress?.(Math.round((loaded / total) * 100));
+          }
+        })
+      );
+
+      if (!mountedRef.current) return;
+
+      if (batchStart < indices.length) {
+        loadNext(); // load next batch
+      } else {
         setIsLoaded(true);
         onLoaded?.();
       }
-    });
+    };
 
-    return () => { isCancelled = true; };
-  }, []);
+    loadNext();
 
+    return () => {
+      mountedRef.current = false;
+      cancelAnimationFrame(rafRef.current);
+      // Close all bitmaps to free GPU memory
+      bitmapsRef.current.forEach((bm) => {
+        if (bm) {
+          try { bm.close(); } catch { /* already closed */ }
+        }
+      });
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Canvas render — EXACT same logic as original ──────────────────────────
   useEffect(() => {
     if (!isLoaded || !canvasRef.current) return;
-    
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) return;
@@ -68,12 +117,10 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
     let renderRequested = false;
     let lastRenderedFrame = -1;
 
-    const render = (progress: number, force: boolean = false) => {
-      const frameIndex = Math.min(
-        frameCount - 1,
-        Math.max(0, Math.floor(progress * frameCount))
-      );
+    const render = (progress: number, force = false) => {
+      if (!mountedRef.current) return;
 
+      const frameIndex = Math.min(frameCount - 1, Math.max(0, Math.floor(progress * frameCount)));
       if (frameIndex === lastRenderedFrame && !force) {
         renderRequested = false;
         return;
@@ -83,8 +130,11 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
       const img = bitmapsRef.current[frameIndex];
       if (img) {
         const dpr = 1;
-        
-        if (canvas.width !== Math.floor(rect.width * dpr) || canvas.height !== Math.floor(rect.height * dpr)) {
+
+        if (
+          canvas.width !== Math.floor(rect.width * dpr) ||
+          canvas.height !== Math.floor(rect.height * dpr)
+        ) {
           canvas.width = Math.floor(rect.width * dpr);
           canvas.height = Math.floor(rect.height * dpr);
           ctx.scale(dpr, dpr);
@@ -99,7 +149,7 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.fillStyle = '#0066FF';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
+
         ctx.scale(dpr, dpr);
         ctx.drawImage(
           img,
@@ -117,7 +167,7 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
     const unsubscribe = smoothProgress.on('change', (latest) => {
       if (!renderRequested) {
         renderRequested = true;
-        requestAnimationFrame(() => render(latest));
+        rafRef.current = requestAnimationFrame(() => render(latest));
       }
     });
 
@@ -125,20 +175,21 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
       rect = canvas.getBoundingClientRect();
       if (!renderRequested) {
         renderRequested = true;
-        requestAnimationFrame(() => render(smoothProgress.get(), true));
+        rafRef.current = requestAnimationFrame(() => render(smoothProgress.get(), true));
       }
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
       unsubscribe();
       window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(rafRef.current);
     };
   }, [isLoaded, smoothProgress]);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[800vh] z-10">
-      <div className="sticky top-0 w-full h-[100vh] z-0 pointer-events-none">
+    <div ref={containerRef} className="relative w-full z-10" style={{ height: '800vh' }}>
+      <div className="sticky top-0 w-full z-0 pointer-events-none" style={{ height: '100vh' }}>
         <canvas
           ref={canvasRef}
           className="w-full h-full"

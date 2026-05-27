@@ -2,7 +2,7 @@
 
 import { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useMotionValue, animate, motion, useInView } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { usePageTransition } from './TransitionProvider';
 
 const products = [
   {
@@ -170,7 +170,8 @@ const ProductCard = memo(function ProductCard({
     >
       {/* CARD CONTENT LAYER */}
       <div
-        className="relative"
+        onClick={() => onProductClick(product)}
+        className="relative cursor-pointer"
         style={{
           width: CARD_W,
           height: 260,
@@ -435,7 +436,7 @@ export default function ProductCarousel() {
   const activeAnimation = useRef<{ stop: () => void } | null>(null);
 
   const sectionInView = useInView(sectionRef, { once: true, margin: '-10% 0px' });
-  const router = useRouter();
+  const { navigateTo } = usePageTransition();
 
   // Track mounted state to guard setState after unmount
   useEffect(() => {
@@ -452,8 +453,8 @@ export default function ProductCarousel() {
 
   const handleProductClick = useCallback((product: typeof products[0]) => {
     const slug = product.name.toLowerCase().replace(/ /g, '-');
-    router.push(`/shop/hydration/${slug}`);
-  }, [router]);
+    navigateTo(`/shop/hydration/${slug}`);
+  }, [navigateTo]);
 
   // Geometry computation variables
   const isMobile = vw < 768;
