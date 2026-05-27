@@ -39,15 +39,15 @@ export default function Footer() {
       <div
         ref={wordmarkRef}
         className="bg-[#080808] px-6 md:px-10 select-none overflow-hidden flex justify-center items-end"
-        style={{ height: 'clamp(140px, 30vw, 480px)' }}
+        style={{ height: 'clamp(60px, 27vw, 460px)' }}
       >
         <motion.div
           className="font-sans font-extrabold text-white text-center leading-none tracking-[-0.08em]"
           animate={wordmarkInView ? { y: '7%' } : { y: '100%' }}
           transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
           style={{
-            fontSize: 'clamp(180px, 38vw, 650px)',
-            lineHeight: 0.72,
+            fontSize: 'clamp(80px, 37vw, 650px)',
+            lineHeight: 0.7,
           }}
         >
           PRIME

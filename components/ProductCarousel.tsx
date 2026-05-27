@@ -170,8 +170,7 @@ const ProductCard = memo(function ProductCard({
     >
       {/* CARD CONTENT LAYER */}
       <div
-        onClick={() => onProductClick(product)}
-        className="relative cursor-pointer"
+        className="relative"
         style={{
           width: CARD_W,
           height: 260,
@@ -183,11 +182,10 @@ const ProductCard = memo(function ProductCard({
           <div
             className="absolute inset-2 pointer-events-none"
             style={{
-              background: product.glowColor,
               transform: 'rotate(-10deg) translateZ(0)',
               borderRadius: '2.5rem',
-              filter: 'blur(45px)',
-              opacity: isActive ? 0.32 : 0.12,
+              boxShadow: `0 0 50px 10px ${product.glowColor}`,
+              opacity: isActive ? 0.25 : 0.08,
               zIndex: 1,
               transition: motionPaused ? 'none' : 'opacity 0.7s ease-in-out',
               backfaceVisibility: 'hidden',
@@ -221,12 +219,11 @@ const ProductCard = memo(function ProductCard({
               <>
                 {/* GPU-Accelerated colorful aura glow behind bottle */}
                 <div
-                  className="absolute bottom-[-130px] left-[25%] -translate-x-1/2 rounded-full pointer-events-none"
+                  className="absolute bottom-[-130px] left-[25%] -translate-x-1/2 pointer-events-none"
                   style={{
                     width: '160px',
                     height: '520px',
-                    backgroundColor: product.glowColor,
-                    filter: 'blur(35px)',
+                    background: `radial-gradient(ellipse at center, ${product.glowColor} 0%, transparent 70%)`,
                     opacity: 0.45,
                     transform: bottleTransform,
                     transformOrigin: 'bottom center',
@@ -236,12 +233,11 @@ const ProductCard = memo(function ProductCard({
                 />
                 {/* GPU-Accelerated soft dark shadow behind bottle */}
                 <div
-                  className="absolute bottom-[-140px] left-[25%] -translate-x-1/2 rounded-full pointer-events-none"
+                  className="absolute bottom-[-140px] left-[25%] -translate-x-1/2 pointer-events-none"
                   style={{
                     width: '140px',
                     height: '500px',
-                    backgroundColor: '#000000',
-                    filter: 'blur(20px)',
+                    background: 'radial-gradient(ellipse at center, #000000 0%, transparent 70%)',
                     opacity: 0.6,
                     transform: bottleTransform,
                     transformOrigin: 'bottom center',
@@ -671,10 +667,12 @@ export default function ProductCarousel() {
 
       {/* Ambient glow */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] rounded-full blur-[120px] opacity-[0.08] pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] max-w-[800px] max-h-[800px] pointer-events-none"
         style={{
-          backgroundColor: active.glowColor,
-          transition: motionPaused ? 'none' : 'background-color 1.8s ease',
+          background: `radial-gradient(circle, ${active.glowColor} 0%, transparent 60%)`,
+          opacity: 0.15,
+          transition: motionPaused ? 'none' : 'background 1.8s ease',
+          zIndex: 0,
         }}
       />
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -73,7 +73,7 @@ function ProductViewImage({
       onError={() => setFailed(true)}
       loading={priority ? "eager" : "lazy"}
       decoding="async"
-      className="h-full w-full object-contain p-6 md:p-10"
+      className="h-full w-full object-contain p-6 md:p-10 pointer-events-none select-none"
     />
   );
 }
@@ -96,12 +96,25 @@ export default function EnergyProductDetail({ product }: { product: EnergyProduc
     setPage([idx, idx > activeIndex ? 1 : -1]);
   };
 
+  const paginate = useCallback((newDirection: number) => {
+    setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
+  }, []);
+
+  const handleDragEnd = (e: any, { offset, velocity }: any) => {
+    const swipe = Math.abs(offset.x) * velocity.x;
+    if (swipe < -10000) {
+      paginate(1);
+    } else if (swipe > 10000) {
+      paginate(-1);
+    }
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setPage(([prevPage]) => [prevPage + 1, 1]);
+      paginate(1);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [paginate]);
 
   return (
     <div className="min-h-screen bg-black">
@@ -136,7 +149,11 @@ export default function EnergyProductDetail({ product }: { product: EnergyProduc
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  className="absolute inset-0 w-full h-full"
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={1}
+                  onDragEnd={handleDragEnd}
+                  className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing flex justify-center items-center"
                 >
                   <ProductViewImage
                     slug={product.slug}

@@ -65,13 +65,20 @@ export default function PostSequenceContent() {
         style={{ opacity, x, rotate }}
         className="sticky top-0 h-screen flex items-center justify-center pointer-events-none z-20"
       >
+        {/* GPU-Accelerated aura glows instead of drop-shadow */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[55vh] pointer-events-none" 
+          style={{ background: 'radial-gradient(ellipse at center, rgba(0,136,255,0.18) 0%, transparent 65%)', zIndex: 0 }} 
+        />
+        <div 
+          className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] h-[40vh] pointer-events-none" 
+          style={{ background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 65%)', zIndex: 0 }} 
+        />
+        
         <img
           src={productData.staticAssets.staticBottle}
           alt="Prime Bottle"
-          className="max-h-[55vh] w-auto object-contain"
-          style={{
-            filter: 'drop-shadow(0 40px 60px rgba(0,136,255,0.25)) drop-shadow(0 12px 24px rgba(0,0,0,0.85))',
-          }}
+          className="max-h-[55vh] w-auto object-contain relative z-10"
         />
       </motion.div>
 
