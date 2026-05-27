@@ -1,0 +1,158 @@
+@import url('https://fonts.bunny.net/css?family=barlow-condensed:900|barlow:400,600');
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@theme {
+  --color-primeBlue: #0066FF;
+  --color-primeDarkBlue: #001A72;
+  --font-bebas: "Bebas Neue", sans-serif;
+  --font-theatre: "Barlow Condensed", "Bebas Neue", sans-serif;
+  --font-sans: var(--font-geist), sans-serif;
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html, body {
+    color: white;
+  }
+  
+  /* Hide scrollbars completely across the app */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
+/* Custom cursor + scroll rail */
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+.prime-custom-cursor {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 9999;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  /* Adaptive against background: appears dark on light, light on dark */
+  mix-blend-mode: difference;
+}
+
+.prime-custom-cursor__circle {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  /* White + difference => adaptive (black on light backgrounds) */
+  background: #fff;
+  transform: scale(1);
+  transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+}
+
+.prime-custom-cursor--clickable .prime-custom-cursor__circle {
+  transform: scale(1.65);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.55), 0 0 20px rgba(255,255,255,0.25);
+  opacity: 1;
+}
+
+.prime-custom-cursor--down .prime-custom-cursor__circle {
+  transform: scale(1.2);
+}
+
+.prime-scroll-indicator,
+.prime-scroll-indicator__fill {
+  pointer-events: none;
+}
+
+.prime-scroll-indicator {
+  position: fixed;
+  top: 90px;
+  right: 14px;
+  height: calc(100vh - 120px);
+  width: 4px;
+  background: rgba(255,255,255,0.22);
+  border-radius: 9999px;
+  z-index: 9998;
+  overflow: hidden;
+  mix-blend-mode: difference;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.14), 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.prime-scroll-indicator__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.95);
+  transform-origin: top;
+  border-radius: 9999px;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .prime-custom-cursor {
+    display: none;
+  }
+  .prime-scroll-indicator {
+    display: none;
+  }
+}
+
+/* Custom underline hover effect */
+.hover-underline {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transform-origin: bottom right;
+  transition: transform 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+}
+.hover-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Infinite Marquee */
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 180s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Product carousel bubble float — CSS compositor path (matches prior Framer Motion loop) */
+.carousel-bubble-float {
+  animation-name: carousel-bubble-float;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@keyframes carousel-bubble-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(6px, -12px, 0) rotate(15deg);
+  }
+}
