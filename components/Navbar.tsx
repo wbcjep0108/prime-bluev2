@@ -71,6 +71,25 @@ export default function Navbar() {
     };
   }, [sampleTheme]);
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [menuOpen]);
+
   const textColor    = theme === 'light' ? '#000' : '#fff';
   const burgerBg     = theme === 'light' ? 'bg-black' : 'bg-white';
 
