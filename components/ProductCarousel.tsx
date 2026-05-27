@@ -2,6 +2,7 @@
 
 import { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useMotionValue, animate, motion, useInView } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 const products = [
   {
@@ -138,12 +139,14 @@ const ProductCard = memo(function ProductCard({
   isActive,
   isFirstProduct,
   motionPaused = false,
+  onProductClick,
 }: {
   product: typeof products[0];
   isNearScreen: boolean;
   isActive: boolean;
   isFirstProduct: boolean;
   motionPaused?: boolean;
+  onProductClick: (product: typeof products[0]) => void;
 }) {
   // Only the first product card tilts left when selected; others stay fixed at 20deg.
   const bottleRotateDeg = isFirstProduct && isActive ? 15 : 20;
@@ -335,6 +338,7 @@ const ProductSlide = memo(
     cardScale,
     width,
     motionPaused,
+    onProductClick,
   }: {
     product: (typeof products)[0];
     idx: number;
@@ -342,6 +346,7 @@ const ProductSlide = memo(
     cardScale: number;
     width: number;
     motionPaused: boolean;
+    onProductClick: (product: typeof products[0]) => void;
   }) {
     const slidePos = idx + 1;
     const isNearScreen = Math.abs(slidePos - slideIndex) <= 1;
@@ -364,6 +369,7 @@ const ProductSlide = memo(
             isActive={isActive}
             isFirstProduct={idx === 0}
             motionPaused={motionPaused}
+            onProductClick={onProductClick}
           />
         </div>
       </div>
@@ -380,7 +386,8 @@ const ProductSlide = memo(
       prevActive === nextActive &&
       prev.cardScale === next.cardScale &&
       prev.width === next.width &&
-      prev.motionPaused === next.motionPaused
+      prev.motionPaused === next.motionPaused &&
+      prev.onProductClick === next.onProductClick
     );
   }
 );
@@ -424,8 +431,29 @@ export default function ProductCarousel() {
   const busy = useRef(false);
   const slideRef = useRef(0);
   const wheelAccumulator = useRef(0);
+  const mounted = useRef(true);
+  const activeAnimation = useRef<{ stop: () => void } | null>(null);
 
   const sectionInView = useInView(sectionRef, { once: true, margin: '-10% 0px' });
+  const router = useRouter();
+
+  // Track mounted state to guard setState after unmount
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      // Cancel any in-flight animation on unmount
+      if (activeAnimation.current) {
+        activeAnimation.current.stop();
+        activeAnimation.current = null;
+      }
+    };
+  }, []);
+
+  const handleProductClick = useCallback((product: typeof products[0]) => {
+    const slug = product.name.toLowerCase().replace(/ /g, '-');
+    router.push(`/shop/hydration/${slug}`);
+  }, [router]);
 
   // Geometry computation variables
   const isMobile = vw < 768;
@@ -478,17 +506,23 @@ export default function ProductCarousel() {
   const spring = useCallback(
     (targetIdx: number) => {
       const targetX = getTargetX(targetIdx);
-      setMotionPaused(true);
-      animate(x, targetX, {
+      // Cancel any previous in-flight animation before starting a new one
+      if (activeAnimation.current) {
+        activeAnimation.current.stop();
+        activeAnimation.current = null;
+      }
+      const controls = animate(x, targetX, {
         type: 'spring',
         stiffness: 62,
         damping: 22,
         mass: 1.25,
         onComplete: () => {
+          if (!mounted.current) return;
           busy.current = false;
-          setMotionPaused(false);
+          activeAnimation.current = null;
         },
       });
+      activeAnimation.current = controls;
     },
     [x, getTargetX]
   );
@@ -541,10 +575,15 @@ export default function ProductCarousel() {
 
   // Drag snapping logic
   const onDragStart = useCallback(() => {
-    setMotionPaused(true);
+    // Reset busy so drag can always interrupt an in-flight spring
+    busy.current = false;
+    if (activeAnimation.current) {
+      activeAnimation.current.stop();
+      activeAnimation.current = null;
+    }
   }, []);
 
-  const onDragEnd = (_event: unknown, info: { velocity: { x: number } }) => {
+  const onDragEnd = useCallback((_event: unknown, info: { velocity: { x: number } }) => {
     const currentX = x.get();
     const velocity = info.velocity.x;
     const FLICK_VELOCITY = 150;
@@ -558,8 +597,8 @@ export default function ProductCarousel() {
     } else {
       let minDiff = Infinity;
       for (let i = 0; i <= N; i++) {
-        const targetX = getTargetX(i);
-        const diff = Math.abs(currentX - targetX);
+        const tX = getTargetX(i);
+        const diff = Math.abs(currentX - tX);
         if (diff < minDiff) {
           minDiff = diff;
           bestIdx = i;
@@ -567,10 +606,12 @@ export default function ProductCarousel() {
       }
     }
 
+    if (!mounted.current) return;
     slideRef.current = bestIdx;
     setSlideIndex(bestIdx);
+    busy.current = true;
     spring(bestIdx);
-  };
+  }, [x, getTargetX, spring]);
 
   // Native wheel handler — avoids React synthetic event overhead
   useEffect(() => {
@@ -750,6 +791,7 @@ export default function ProductCarousel() {
               cardScale={cardScale}
               width={W_c}
               motionPaused={motionPaused}
+              onProductClick={handleProductClick}
             />
           ))}
         </motion.div>
@@ -760,9 +802,7 @@ export default function ProductCarousel() {
         {/* CTA Button */}
         <div className="pointer-events-auto mb-1 md:mb-2">
           <motion.button
-            onClick={() => {
-              console.log('Explore product:', active.name);
-            }}
+            onClick={() => handleProductClick(active)}
             className="flex items-center font-bold uppercase text-xs md:text-sm tracking-wider transition-transform hover:scale-105 active:scale-95 whitespace-nowrap bg-transparent border-none p-0"
             style={{
               color: active.glowColor,
