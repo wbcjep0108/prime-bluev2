@@ -1,3 +1,4 @@
+import { getCldImageUrl } from '../lib/cloudinary';
 export interface HydrationProduct {
   id: number;
   slug: string;        // used for image filename
@@ -26,7 +27,7 @@ export const hydrationProducts: HydrationProduct[] = [
     bg: '#0052CC',
     dark: '#001A72',
     light: '#66AAFF',
-    image: '/images/hydration/blue-raspberry.svg',
+    image: getCldImageUrl('/images/hydration/blue-raspberry.svg'),
   },
   {
     id: 2,
@@ -40,7 +41,7 @@ export const hydrationProducts: HydrationProduct[] = [
     bg: '#4D7C0F',
     dark: '#1A2E05',
     light: '#A3E635',
-    image: '/images/hydration/lemon-lime.svg',
+    image: getCldImageUrl('/images/hydration/lemon-lime.svg'),
   },
   {
     id: 3,
@@ -54,7 +55,7 @@ export const hydrationProducts: HydrationProduct[] = [
     bg: '#CA8A04',
     dark: '#1C1500',
     light: '#FDE68A',
-    image: '/images/hydration/lemonade.svg',
+    image: getCldImageUrl('/images/hydration/lemonade.svg'),
   },
   {
     id: 4,
@@ -68,7 +69,7 @@ export const hydrationProducts: HydrationProduct[] = [
     bg: '#E11D48',
     dark: '#4C0519',
     light: '#FCA5A5',
-    image: '/images/hydration/strawberry-watermelon.svg',
+    image: getCldImageUrl('/images/hydration/strawberry-watermelon.svg'),
   },
   {
     id: 5,
@@ -82,7 +83,7 @@ export const hydrationProducts: HydrationProduct[] = [
     bg: '#BE123C',
     dark: '#4C0519',
     light: '#FB7185',
-    image: '/images/hydration/tropical-punch.svg',
+    image: getCldImageUrl('/images/hydration/tropical-punch.svg'),
   },
   {
     id: 6,
@@ -96,7 +97,7 @@ export const hydrationProducts: HydrationProduct[] = [
     bg: '#0284C7',
     dark: '#082F49',
     light: '#7DD3FC',
-    image: '/images/hydration/ice-pop.svg',
+    image: getCldImageUrl('/images/hydration/ice-pop.svg'),
   },
   {
     id: 7,
@@ -110,7 +111,7 @@ export const hydrationProducts: HydrationProduct[] = [
     bg: '#0EA5E9',
     dark: '#0C2340',
     light: '#7DD3FC',
-    image: '/images/hydration/frostbite-fusion.svg',
+    image: getCldImageUrl('/images/hydration/frostbite-fusion.svg'),
   },
 ];
 

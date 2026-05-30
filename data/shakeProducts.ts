@@ -1,3 +1,4 @@
+import { getCldImageUrl } from '../lib/cloudinary';
 export interface ShakeProduct {
   id: number;
   slug: string;
@@ -22,7 +23,7 @@ export const shakeProducts: ShakeProduct[] = [
     bg: '#451A03', // Dark brown
     dark: '#270F02',
     light: '#78350F',
-    image: '/images/shake/chocolate.webp',
+    image: getCldImageUrl('/images/shake/chocolate.webp'),
   },
   {
     id: 202,
@@ -34,7 +35,7 @@ export const shakeProducts: ShakeProduct[] = [
     bg: '#FEF3C7', // Vanilla cream
     dark: '#B45309',
     light: '#FFFBEB',
-    image: '/images/shake/vanilla.webp',
+    image: getCldImageUrl('/images/shake/vanilla.webp'),
   },
   {
     id: 203,
@@ -46,6 +47,6 @@ export const shakeProducts: ShakeProduct[] = [
     bg: '#1F2937', // Cookie dark
     dark: '#030712',
     light: '#F3F4F6', // Cream light
-    image: '/images/shake/cookies-and-cream.webp',
+    image: getCldImageUrl('/images/shake/cookies-and-cream.webp'),
   },
 ];

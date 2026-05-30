@@ -1,3 +1,4 @@
+import { getCldImageUrl } from '../lib/cloudinary';
 ﻿/** Shared nutrition / benefit tags shown on every energy PDP */
 export const ENERGY_MAIN_NOTES = [
   "Zero Sugar",
@@ -18,5 +19,5 @@ export const ENERGY_IMAGE_VIEWS: { id: EnergyImageView; label: string }[] = [
 
 /** Placeholder paths - replace with real assets under /public/images/energy/{slug}/ */
 export function getEnergyViewImage(slug: string, view: EnergyImageView) {
-  return `/images/energy/${slug}/${view}.webp`;
+  return getCldImageUrl(`/images/energy/${slug}/${view}.webp`);
 }

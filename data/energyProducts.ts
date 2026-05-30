@@ -1,3 +1,4 @@
+import { getCldImageUrl } from '../lib/cloudinary';
 export interface EnergyProduct {
   id: number;
   slug: string;
@@ -22,7 +23,7 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#E11D48',
     dark: '#4C0519',
     light: '#FDA4AF',
-    image: '/images/energy/strawberry-lemonade.webp',
+    image: getCldImageUrl('/images/energy/strawberry-lemonade.webp'),
   },
   {
     id: 102,
@@ -34,7 +35,7 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#D97706',
     dark: '#451A03',
     light: '#FCD34D',
-    image: '/images/energy/peso-pluma.webp',
+    image: getCldImageUrl('/images/energy/peso-pluma.webp'),
   },
   {
     id: 103,
@@ -46,7 +47,7 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#BE123C',
     dark: '#4C0519',
     light: '#FDA4AF',
-    image: '/images/energy/cherry-limeade.webp',
+    image: getCldImageUrl('/images/energy/cherry-limeade.webp'),
   },
   {
     id: 104,
@@ -58,7 +59,7 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#EA580C',
     dark: '#431407',
     light: '#FDBA74',
-    image: '/images/energy/dripsicle.webp',
+    image: getCldImageUrl('/images/energy/dripsicle.webp'),
   },
   {
     id: 105,
@@ -70,7 +71,7 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#C026D3',
     dark: '#4A044E',
     light: '#F0ABFC',
-    image: '/images/energy/dream-pop.webp',
+    image: getCldImageUrl('/images/energy/dream-pop.webp'),
   },
   {
     id: 106,
@@ -82,6 +83,6 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#0052CC',
     dark: '#001A72',
     light: '#66AAFF',
-    image: '/images/energy/original.webp',
+    image: getCldImageUrl('/images/energy/original.webp'),
   },
 ];

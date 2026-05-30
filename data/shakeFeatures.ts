@@ -1,3 +1,4 @@
+import { getCldImageUrl } from '../lib/cloudinary';
 ﻿/** Shared nutrition / benefit tags shown on every shake PDP */
 export const SHAKE_MAIN_NOTES = [
   "32g PROTEIN per serving",
@@ -17,5 +18,5 @@ export const SHAKE_IMAGE_VIEWS: { id: ShakeImageView; label: string }[] = [
 
 /** Placeholder paths - replace with real assets under /public/images/shake/{slug}/ */
 export function getShakeViewImage(slug: string, view: ShakeImageView) {
-  return `/images/shake/${slug}/${view}.webp`;
+  return getCldImageUrl(`/images/shake/${slug}/${view}.webp`);
 }

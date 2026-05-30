@@ -1,6 +1,6 @@
 export function getCldImageUrl(path: string) {
-  // If no cloud name is set or it's an external URL, return as is
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  // Use the env variable if available, otherwise fallback to the known cloud name
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dsvljz4ho";
   if (!cloudName || path.startsWith('http') || path.startsWith('data:')) {
     return path;
   }

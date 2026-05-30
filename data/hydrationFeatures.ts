@@ -1,3 +1,4 @@
+import { getCldImageUrl } from '../lib/cloudinary';
 /** Shared nutrition / benefit tags shown on every hydration PDP */
 export const HYDRATION_MAIN_NOTES = [
   'Zero Added Sugar',
@@ -18,5 +19,5 @@ export const HYDRATION_IMAGE_VIEWS: { id: HydrationImageView; label: string }[] 
 
 /** Placeholder paths — replace with real assets under /public/images/hydration/{slug}/ */
 export function getHydrationViewImage(slug: string, view: HydrationImageView) {
-  return `/images/hydration/${slug}/${view}.webp`;
+  return getCldImageUrl(`/images/hydration/${slug}/${view}.webp`);
 }
