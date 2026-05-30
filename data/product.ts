@@ -1,5 +1,3 @@
-import { getCldImageUrl } from '../lib/cloudinary';
-
 export const productData = {
   name: 'Prime Blue Raspberry',
   price: '',
@@ -9,7 +7,7 @@ export const productData = {
     white: '#FFFFFF',
   },
   staticAssets: {
-    staticBottle: getCldImageUrl('/images/prime-bottle-static.png'),
+    staticBottle: '/images/prime-bottle-static.png',
     finalTagline: 'THE ULTIMATE FREEZE. HYDRATE NOW.',
   },
   specs: {

@@ -1,4 +1,3 @@
-import { getCldImageUrl } from '../lib/cloudinary';
 export interface EnergyProduct {
   id: number;
   slug: string;
@@ -14,7 +13,7 @@ export interface EnergyProduct {
 
 export const energyProducts: EnergyProduct[] = [
   {
-    id: 101, // 100 series to avoid ID collisions with Hydration
+    id: 101,
     slug: 'strawberry-lemonade',
     name: 'Strawberry Lemonade',
     tagline: 'Electric summer energy.',
@@ -23,19 +22,19 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#E11D48',
     dark: '#4C0519',
     light: '#FDA4AF',
-    image: getCldImageUrl('/images/energy/strawberry-lemonade.webp'),
+    image: '/images/energy/strawberry-lemonade.webp',
   },
   {
     id: 102,
     slug: 'peso-pluma',
     name: 'Peso Pluma',
-    tagline: 'Energía pura.',
+    tagline: 'Energ\u00eda pura.',
     category: 'Energy',
     price: 3.49,
     bg: '#D97706',
     dark: '#451A03',
     light: '#FCD34D',
-    image: getCldImageUrl('/images/energy/peso-pluma.webp'),
+    image: '/images/energy/peso-pluma.webp',
   },
   {
     id: 103,
@@ -47,7 +46,7 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#BE123C',
     dark: '#4C0519',
     light: '#FDA4AF',
-    image: getCldImageUrl('/images/energy/cherry-limeade.webp'),
+    image: '/images/energy/cherry-limeade.webp',
   },
   {
     id: 104,
@@ -59,7 +58,7 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#EA580C',
     dark: '#431407',
     light: '#FDBA74',
-    image: getCldImageUrl('/images/energy/dripsicle.webp'),
+    image: '/images/energy/dripsicle.webp',
   },
   {
     id: 105,
@@ -71,7 +70,7 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#C026D3',
     dark: '#4A044E',
     light: '#F0ABFC',
-    image: getCldImageUrl('/images/energy/dream-pop.webp'),
+    image: '/images/energy/dream-pop.webp',
   },
   {
     id: 106,
@@ -83,6 +82,6 @@ export const energyProducts: EnergyProduct[] = [
     bg: '#0052CC',
     dark: '#001A72',
     light: '#66AAFF',
-    image: getCldImageUrl('/images/energy/original.webp'),
+    image: '/images/energy/original.webp',
   },
 ];

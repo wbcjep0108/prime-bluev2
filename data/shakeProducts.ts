@@ -1,4 +1,3 @@
-import { getCldImageUrl } from '../lib/cloudinary';
 export interface ShakeProduct {
   id: number;
   slug: string;
@@ -14,16 +13,16 @@ export interface ShakeProduct {
 
 export const shakeProducts: ShakeProduct[] = [
   {
-    id: 201, // 200 series for Shake
+    id: 201,
     slug: 'chocolate',
     name: 'Chocolate',
     tagline: 'Rich, smooth, classic.',
     category: 'Shake',
     price: 3.99,
-    bg: '#451A03', // Dark brown
+    bg: '#451A03',
     dark: '#270F02',
     light: '#78350F',
-    image: getCldImageUrl('/images/shake/chocolate.webp'),
+    image: '/images/shake/chocolate.webp',
   },
   {
     id: 202,
@@ -32,10 +31,10 @@ export const shakeProducts: ShakeProduct[] = [
     tagline: 'Pure and creamy.',
     category: 'Shake',
     price: 3.99,
-    bg: '#FEF3C7', // Vanilla cream
+    bg: '#FEF3C7',
     dark: '#B45309',
     light: '#FFFBEB',
-    image: getCldImageUrl('/images/shake/vanilla.webp'),
+    image: '/images/shake/vanilla.webp',
   },
   {
     id: 203,
@@ -44,9 +43,9 @@ export const shakeProducts: ShakeProduct[] = [
     tagline: 'The best of both worlds.',
     category: 'Shake',
     price: 3.99,
-    bg: '#1F2937', // Cookie dark
+    bg: '#1F2937',
     dark: '#030712',
-    light: '#F3F4F6', // Cream light
-    image: getCldImageUrl('/images/shake/cookies-and-cream.webp'),
+    light: '#F3F4F6',
+    image: '/images/shake/cookies-and-cream.webp',
   },
 ];

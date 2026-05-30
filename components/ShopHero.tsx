@@ -3,12 +3,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { getCldImageUrl } from '../lib/cloudinary';
+
 
 const slides = [
-  { id: 'hydration', image: getCldImageUrl('/images/shop-hero/hydration.webp'), title: 'Hydration' },
-  { id: 'energy', image: getCldImageUrl('/images/shop-hero/energy.webp'), title: 'Energy' },
-  { id: 'shake', image: getCldImageUrl('/images/shop-hero/shake.webp'), title: 'Shake' },
+  { id: 'hydration', image: '/images/shop-hero/hydration.webp', title: 'Hydration' },
+  { id: 'energy', image: '/images/shop-hero/energy.webp', title: 'Energy' },
+  { id: 'shake', image: '/images/shop-hero/shake.webp', title: 'Shake' },
 ];
 
 const variants = {

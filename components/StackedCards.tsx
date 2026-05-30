@@ -8,7 +8,7 @@ import {
   MotionValue,
 } from 'framer-motion';
 
-import { getCldImageUrl } from '../lib/cloudinary';
+
 
 // ─── Card data ─────────────────────────────────────────────────────────────────
 
@@ -23,7 +23,7 @@ const CARDS = [
     bg: '#080810',
     accent: '#4488FF',
     textLight: true,
-    image: getCldImageUrl('/images/stacked-cards/card1.svg'),
+    image: '/images/stacked-cards/card1.svg',
   },
   {
     num: '02',
@@ -35,7 +35,7 @@ const CARDS = [
     bg: '#F5F0E8',
     accent: '#0066FF',
     textLight: false,
-    image: getCldImageUrl('/images/stacked-cards/card2.svg'),
+    image: '/images/stacked-cards/card2.svg',
   },
   {
     num: '03',
@@ -47,7 +47,7 @@ const CARDS = [
     bg: '#1A0008',
     accent: '#FF4060',
     textLight: true,
-    image: getCldImageUrl('/images/stacked-cards/card3.svg'),
+    image: '/images/stacked-cards/card3.svg',
   },
   {
     num: '04',
@@ -59,7 +59,7 @@ const CARDS = [
     bg: '#0A0804',
     accent: '#FFB800',
     textLight: true,
-    image: getCldImageUrl('/images/stacked-cards/card4.svg'),
+    image: '/images/stacked-cards/card4.svg',
   },
 ] as const;
 
