@@ -58,7 +58,10 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
         batch.map(async (i) => {
           const padded = (i + 1).toString().padStart(3, '0');
           try {
-            const res = await fetch(`/images/sequence/ezgif-frame-${padded}.jpg`);
+            const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+            const baseUrl = cloudName ? `https://res.cloudinary.com/${cloudName}/image/upload` : '';
+            const imgUrl = cloudName ? `${baseUrl}/images/sequence/ezgif-frame-${padded}.jpg` : `/images/sequence/ezgif-frame-${padded}.jpg`;
+            const res = await fetch(imgUrl);
             if (!mountedRef.current) return;
             const blob = await res.blob();
             const bm = await createImageBitmap(blob);

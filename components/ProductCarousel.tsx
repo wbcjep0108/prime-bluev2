@@ -3,6 +3,7 @@
 import { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useMotionValue, animate, motion, useInView } from 'framer-motion';
 import { usePageTransition } from './TransitionProvider';
+import { getCldImageUrl } from '../lib/cloudinary';
 
 const products = [
   {
@@ -11,7 +12,7 @@ const products = [
     flavor: 'Ice Cold',
     tagline: 'The Original Freeze',
     badgeText: 'THE FREEZE',
-    image: '/images/carousel/raspberry.webp',
+    image: getCldImageUrl('/images/carousel/raspberry.webp'),
     cardBg: 'radial-gradient(circle at 75% 65%, #33ccff 0%, #0055cc 40%, #001166 75%, #00001a 100%)',
     glowColor: '#0088ff',
     textColor: '#cce8ff',
@@ -25,7 +26,7 @@ const products = [
     flavor: 'Sharp & Fresh',
     tagline: 'Zest for the Game',
     badgeText: 'THE ORIGINAL',
-    image: '/images/carousel/lemon-lime.webp',
+    image: getCldImageUrl('/images/carousel/lemon-lime.webp'),
     cardBg: 'radial-gradient(circle at 75% 65%, #ddff00 0%, #66cc00 40%, #115500 75%, #021100 100%)',
     glowColor: '#88dd00',
     textColor: '#ddffaa',
@@ -39,7 +40,7 @@ const products = [
     flavor: 'Sunshine Burst',
     tagline: 'Bright. Bold. Electric.',
     badgeText: 'THE SUNSHINE',
-    image: '/images/carousel/lemonade.webp',
+    image: getCldImageUrl('/images/carousel/lemonade.webp'),
     cardBg: 'radial-gradient(circle at 75% 65%, #ffff44 0%, #ddaa00 40%, #553300 75%, #110600 100%)',
     glowColor: '#ffdd00',
     textColor: '#fff9cc',
@@ -53,7 +54,7 @@ const products = [
     flavor: 'Sweet & Bold',
     tagline: 'Summer in a Bottle',
     badgeText: 'THE SWEET',
-    image: '/images/carousel/strawberry.webp',
+    image: getCldImageUrl('/images/carousel/strawberry.webp'),
     cardBg: 'radial-gradient(circle at 75% 65%, #ff66cc 0%, #dd0066 40%, #660022 75%, #110005 100%)',
     glowColor: '#ff44aa',
     textColor: '#ffccee',
@@ -67,7 +68,7 @@ const products = [
     flavor: 'Paradise Blast',
     tagline: 'Taste the Island',
     badgeText: 'THE PUNCH',
-    image: '/images/carousel/tropical-punch.webp',
+    image: getCldImageUrl('/images/carousel/tropical-punch.webp'),
     cardBg: 'radial-gradient(circle at 75% 65%, #ff5533 0%, #cc1100 40%, #550000 75%, #0d0000 100%)',
     glowColor: '#ff3322',
     textColor: '#ffcccc',
@@ -111,7 +112,7 @@ const FloatingBubble = memo(function FloatingBubble({
   const shouldAnimate = isNearScreen && isActive && !motionPaused;
   return (
     <img
-      src="/images/carousel/bubble.webp"
+      src={getCldImageUrl('/images/carousel/bubble.webp')}
       alt=""
       aria-hidden
       draggable={false}
@@ -537,7 +538,7 @@ export default function ProductCarousel() {
       img.src = p.image;
     });
     const bubble = new Image();
-    bubble.src = '/images/carousel/bubble.webp';
+    bubble.src = getCldImageUrl('/images/carousel/bubble.webp');
   }, []);
 
   const goNext = useCallback(() => {
