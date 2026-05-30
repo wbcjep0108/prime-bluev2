@@ -10,6 +10,7 @@ export interface HydrationProduct {
   dark: string;
   light: string;
   image: string;
+  amazonUrl: string;
 }
 
 export const hydrationProducts: HydrationProduct[] = [
@@ -26,6 +27,7 @@ export const hydrationProducts: HydrationProduct[] = [
     dark: '#001A72',
     light: '#66AAFF',
     image: '/images/hydration/blue-raspberry.svg',
+    amazonUrl: 'https://www.amazon.com/Hydration-Muscle-Recovery-Raspberry-Drinks/dp/B09W363VTH?maas=maas_adg_78E76E7E4B7501578B4D7A3D76DA26C_afap_abs&ref_=aa_maas',
   },
   {
     id: 2,
@@ -40,6 +42,7 @@ export const hydrationProducts: HydrationProduct[] = [
     dark: '#1A2E05',
     light: '#A3E635',
     image: '/images/hydration/lemon-lime.svg',
+    amazonUrl: 'https://www.amazon.com/Prime-Hydration-Muscle-Recovery-Drinks/dp/B09W35HZRZ?maas=maas_adg_D5D52EBA500F8209FF34005545B90F47_afap_abs&ref_=aa_maas',
   },
   {
     id: 3,
@@ -54,6 +57,7 @@ export const hydrationProducts: HydrationProduct[] = [
     dark: '#1C1500',
     light: '#FDE68A',
     image: '/images/hydration/lemonade.svg',
+    amazonUrl: 'https://www.amazon.com/PRIME-Hydration-LEMONADE-Electrolyte-Antioxidants/dp/B0C6FQRCZR?maas=maas_adg_61DFFE973150F2FF428417F7079CFF5D_afap_abs&ref_=aa_maas',
   },
   {
     id: 4,
@@ -68,6 +72,7 @@ export const hydrationProducts: HydrationProduct[] = [
     dark: '#4C0519',
     light: '#FCA5A5',
     image: '/images/hydration/strawberry-watermelon.svg',
+    amazonUrl: 'https://www.amazon.com/PRIME-STRAWBERRY-WATERMELON-Electrolyte-Antioxidants/dp/B0C2JLSD6K?maas=maas_adg_5B86901C6FEDE11CD16978BDC2726060_afap_abs&ref_=aa_maas',
   },
   {
     id: 5,
@@ -82,6 +87,7 @@ export const hydrationProducts: HydrationProduct[] = [
     dark: '#4C0519',
     light: '#FB7185',
     image: '/images/hydration/tropical-punch.svg',
+    amazonUrl: 'https://www.amazon.com/Hydration-Muscle-Recovery-Tropical-Drinks/dp/B09W33L8SC?maas=maas_adg_62639B8424FF7A20ABE1B5821977AA14_afap_abs&ref_=aa_maas',
   },
   {
     id: 6,
@@ -96,6 +102,7 @@ export const hydrationProducts: HydrationProduct[] = [
     dark: '#082F49',
     light: '#7DD3FC',
     image: '/images/hydration/ice-pop.svg',
+    amazonUrl: '',
   },
   {
     id: 7,
@@ -110,6 +117,7 @@ export const hydrationProducts: HydrationProduct[] = [
     dark: '#0C2340',
     light: '#7DD3FC',
     image: '/images/hydration/frostbite-fusion.svg',
+    amazonUrl: '',
   },
 ];
 

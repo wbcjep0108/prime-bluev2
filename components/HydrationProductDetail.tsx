@@ -95,7 +95,7 @@ export default function HydrationProductDetail({ product }: { product: Hydration
   const { navigateTo } = usePageTransition();
 
   const accent = product.bg;
-  const AMAZON_PRIME_PRODUCT_URL = '';
+  const AMAZON_PRIME_PRODUCT_URL = product.amazonUrl;
 
   const goToView = (idx: number) => {
     setPage([idx, idx > activeIndex ? 1 : -1]);

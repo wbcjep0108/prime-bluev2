@@ -9,6 +9,7 @@ export interface ShakeProduct {
   dark: string;
   light: string;
   image: string;
+  amazonUrl: string;
 }
 
 export const shakeProducts: ShakeProduct[] = [
@@ -23,6 +24,7 @@ export const shakeProducts: ShakeProduct[] = [
     dark: '#270F02',
     light: '#78350F',
     image: '/images/shake/chocolate.webp',
+    amazonUrl: 'https://www.amazon.com/PRIME-Protein-Chocolate-Recovery-Ultra-Filtered/dp/B0G7MSWYF7/ref=sr_1_4?sr=8-4',
   },
   {
     id: 202,
@@ -35,6 +37,7 @@ export const shakeProducts: ShakeProduct[] = [
     dark: '#B45309',
     light: '#FFFBEB',
     image: '/images/shake/vanilla.webp',
+    amazonUrl: 'https://www.amazon.com/PRIME-Protein-Vanilla-Recovery-Ultra-Filtered/dp/B0G7MC7TWC?ref_=ast_sto_dp',
   },
   {
     id: 203,
@@ -47,5 +50,6 @@ export const shakeProducts: ShakeProduct[] = [
     dark: '#030712',
     light: '#F3F4F6',
     image: '/images/shake/cookies-and-cream.webp',
+    amazonUrl: 'https://www.amazon.com/PRIME-Protein-Cookies-Recovery-Ultra-Filtered/dp/B0G7MX5FHZ/ref=sr_1_6?sr=8-6',
   },
 ];

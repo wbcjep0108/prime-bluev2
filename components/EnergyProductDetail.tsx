@@ -90,7 +90,7 @@ export default function EnergyProductDetail({ product }: { product: EnergyProduc
   const { navigateTo } = usePageTransition();
 
   const accent = product.bg;
-  const AMAZON_PRIME_PRODUCT_URL = "";
+  const AMAZON_PRIME_PRODUCT_URL = product.amazonUrl;
 
   const goToView = (idx: number) => {
     setPage([idx, idx > activeIndex ? 1 : -1]);
@@ -261,7 +261,7 @@ export default function EnergyProductDetail({ product }: { product: EnergyProduc
                 className="group relative flex-1 overflow-hidden rounded-full bg-white px-8 py-4 text-sm font-bold uppercase tracking-widest"
                 onClick={() => {
                   if (!AMAZON_PRIME_PRODUCT_URL) {
-                    console.warn('TODO: add Amazon Prime product link for', product.slug ?? product.name);
+                    console.warn('No Amazon Prime product link for', product.slug ?? product.name);
                     return;
                   }
                   window.location.href = AMAZON_PRIME_PRODUCT_URL;
