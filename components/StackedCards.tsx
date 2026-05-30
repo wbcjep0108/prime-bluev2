@@ -236,7 +236,7 @@ function AnimatedCard({
   );
 
   return (
-    <motion.div style={{ ...cardStyle, zIndex, y, rotate }}>
+    <motion.div style={{ ...cardStyle, zIndex, y, rotate, willChange: 'transform', backfaceVisibility: 'hidden' }}>
       <CardContent card={card} />
     </motion.div>
   );

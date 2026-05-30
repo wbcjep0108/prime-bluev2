@@ -156,3 +156,8 @@
     transform: translate3d(6px, -12px, 0) rotate(15deg);
   }
 }
+
+/* Pause all bubble float animations globally while scrolling to achieve buttery-smooth 60/120fps */
+body.is-scrolling .carousel-bubble-float {
+  animation-play-state: paused !important;
+}

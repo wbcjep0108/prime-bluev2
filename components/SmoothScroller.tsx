@@ -16,6 +16,19 @@ export default function SmoothScroller() {
     });
     lenis.scrollTo(0, { immediate: true });
 
+    let scrollTimeout: NodeJS.Timeout | null = null;
+    const handleScroll = () => {
+      document.body.classList.add('is-scrolling');
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+      scrollTimeout = setTimeout(() => {
+        document.body.classList.remove('is-scrolling');
+      }, 150);
+    };
+
+    lenis.on('scroll', handleScroll);
+
     // We can also manually call raf if autoRaf is not available in this version:
     function raf(time: number) {
       lenis.raf(time);
@@ -24,7 +37,10 @@ export default function SmoothScroller() {
     requestAnimationFrame(raf);
 
     return () => {
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      lenis.off('scroll', handleScroll);
       lenis.destroy();
+      document.body.classList.remove('is-scrolling');
     };
   }, []);
 

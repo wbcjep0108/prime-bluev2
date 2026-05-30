@@ -178,15 +178,15 @@ const ProductCard = memo(function ProductCard({
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* GPU Glow Layer (rendered behind tilted card body) - high performance blur */}
+        {/* GPU Glow Layer (rendered behind tilted card body) - high performance gradient glow */}
         {isNearScreen && (
           <div
             className="absolute inset-2 pointer-events-none"
             style={{
               transform: 'rotate(-10deg) translateZ(0)',
               borderRadius: '2.5rem',
-              boxShadow: `0 0 50px 10px ${product.glowColor}`,
-              opacity: isActive ? 0.25 : 0.08,
+              background: `radial-gradient(circle at 50% 50%, ${product.glowColor}aa 0%, transparent 70%)`,
+              opacity: isActive ? 0.6 : 0.15,
               zIndex: 1,
               transition: motionPaused ? 'none' : 'opacity 0.7s ease-in-out',
               backfaceVisibility: 'hidden',
@@ -432,7 +432,7 @@ export default function ProductCarousel() {
   const mounted = useRef(true);
   const activeAnimation = useRef<{ stop: () => void } | null>(null);
 
-  const sectionInView = useInView(sectionRef, { once: true, margin: '-10% 0px' });
+  const sectionInView = useInView(sectionRef, { once: false, margin: '200px 0px' });
   const { navigateTo } = usePageTransition();
 
   // Track mounted state to guard setState after unmount
@@ -664,15 +664,15 @@ export default function ProductCarousel() {
         height: isMobile ? '100svh' : 'max(680px, calc(100svh + 5rem))',
       }}
     >
-      <SectionBackgrounds productIndex={productIndex} motionPaused={motionPaused} />
+      <SectionBackgrounds productIndex={productIndex} motionPaused={motionPaused || !sectionInView} />
 
       {/* Ambient glow */}
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] max-w-[800px] max-h-[800px] pointer-events-none"
         style={{
           background: `radial-gradient(circle, ${active.glowColor} 0%, transparent 60%)`,
-          opacity: 0.15,
-          transition: motionPaused ? 'none' : 'background 1.8s ease',
+          opacity: sectionInView ? 0.15 : 0,
+          transition: (motionPaused || !sectionInView) ? 'none' : 'background 1.8s ease, opacity 0.5s ease',
           zIndex: 0,
         }}
       />
@@ -695,7 +695,7 @@ export default function ProductCarousel() {
             paddingRight: `${P_l}px`,
             paddingTop: isMobile ? 'clamp(3rem, 7vh, 5rem)' : 'clamp(5rem, 11vh, 8rem)',
             paddingBottom: isMobile ? 'clamp(6rem, 14vh, 8rem)' : 'clamp(8.5rem, 19vh, 11rem)',
-            willChange: motionPaused ? 'transform' : 'auto',
+            willChange: 'transform',
             backfaceVisibility: 'hidden',
           }}
         >
@@ -790,7 +790,7 @@ export default function ProductCarousel() {
               slideIndex={slideIndex}
               cardScale={cardScale}
               width={W_c}
-              motionPaused={motionPaused}
+              motionPaused={motionPaused || !sectionInView}
               onProductClick={handleProductClick}
             />
           ))}
