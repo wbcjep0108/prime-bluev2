@@ -2,6 +2,7 @@
 
 import { useScroll, useTransform, motion } from 'framer-motion';
 import { productData } from '../data/product';
+import Galaxy from './Galaxy';
 
 export default function TravelingBottle() {
   const { scrollYProgress } = useScroll();
@@ -35,10 +36,26 @@ export default function TravelingBottle() {
 
   return (
     <motion.div
-      style={{ opacity, x, y: 0, rotate, scale }}
+      style={{ opacity }}
       className="fixed inset-0 flex items-center justify-center pointer-events-none z-30"
     >
-      <img
+      <div style={{ position: 'absolute', width: '1080px', height: '1080px', zIndex: -1 }}>
+        <Galaxy
+          starSpeed={0.5}
+          density={1}
+          hueShift={140}
+          speed={1}
+          glowIntensity={0.3}
+          saturation={0}
+          mouseRepulsion
+          repulsionStrength={2}
+          twinkleIntensity={0.3}
+          rotationSpeed={0.1}
+          transparent
+        />
+      </div>
+      <motion.img
+        style={{ x, rotate, scale }}
         src={productData.staticAssets.staticBottle}
         alt="Prime Bottle"
         className="max-h-[55vh] w-auto object-contain drop-shadow-2xl"

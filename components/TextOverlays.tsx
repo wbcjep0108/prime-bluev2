@@ -120,7 +120,7 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
             </Reveal>
 
             <Reveal isLoaded={isLoaded} delay={0.3}>
-              <p className="text-white/60 text-xs leading-relaxed uppercase tracking-wider font-semibold max-w-[34ch] mt-5">
+              <p className="text-[#cccccc] text-xs leading-relaxed uppercase tracking-wider font-semibold max-w-[34ch] mt-5">
                 Our signature Blue Raspberry is not just a flavour — it is a temperature drop. That sharp,
                 electric freeze hits the second it crosses your lips.
               </p>
@@ -131,7 +131,7 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
               <div className="mt-6 flex items-center gap-2">
                 <div className="w-1 h-6 bg-[#0066FF]" />
                 <div>
-                  <p className="text-[9px] uppercase tracking-[0.3em] text-white/40 font-semibold leading-none">
+                  <p className="text-[9px] uppercase tracking-[0.3em] text-[#cccccc] font-semibold leading-none">
                     Co-Founded by
                   </p>
                   <p className="font-bebas text-base text-white uppercase tracking-wide leading-tight mt-0.5">
@@ -158,7 +158,7 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
               </h1>
             </Reveal>
             <Reveal isLoaded={isLoaded} delay={0.22}>
-              <p className="text-[9px] uppercase tracking-[0.5em] text-white/30 font-semibold mt-3">
+              <p className="text-[9px] uppercase tracking-[0.5em] text-[#cccccc] font-semibold mt-3">
                 Est. 2022
               </p>
             </Reveal>
@@ -180,7 +180,7 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
                   <h3 className="font-bebas text-base text-white uppercase tracking-wider mb-1">
                     Advanced Performance
                   </h3>
-                  <p className="text-white/50 text-[11px] leading-relaxed uppercase tracking-wider font-semibold">
+                  <p className="text-[#cccccc] text-[11px] leading-relaxed uppercase tracking-wider font-semibold">
                     10% coconut water and 834mg of vital electrolytes deliver immediate hydration.
                   </p>
                 </div>
@@ -195,7 +195,7 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
                 <h3 className="font-bebas text-base text-white uppercase tracking-wider mt-1">
                   Zero Compromise.
                 </h3>
-                <p className="text-white/50 text-[11px] leading-relaxed uppercase tracking-wider font-semibold mt-1">
+                <p className="text-[#cccccc] text-[11px] leading-relaxed uppercase tracking-wider font-semibold mt-1">
                   Fueled with 250mg of BCAAs, zero artificial colors, and B vitamins to push past limits.
                 </p>
               </Reveal>
@@ -209,7 +209,7 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
           {/* Bottom-left HUD widget */}
           <Reveal isLoaded={isLoaded} delay={0.5}>
             <div className="w-[180px] h-[90px] bg-white/[0.02] border border-white/10 rounded-lg p-3 flex flex-col justify-between backdrop-blur-sm text-left">
-              <div className="flex justify-between items-center text-[8px] font-mono tracking-widest text-white/40">
+              <div className="flex justify-between items-center text-[8px] font-mono tracking-widest text-[#cccccc]">
                 <span>BOTTLE SPEC 01</span>
                 <span className="text-[#0066FF]">SYS // OK</span>
               </div>
@@ -230,7 +230,7 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
 
           {/* Bottom-center developer credit */}
           <Reveal isLoaded={isLoaded} delay={0.55}>
-            <p className="text-[8px] uppercase tracking-[0.4em] text-white/25 font-semibold text-center">
+            <p className="text-[8px] uppercase tracking-[0.4em] text-[#cccccc] font-semibold text-center">
               Developed by Harry Lagto
             </p>
           </Reveal>
@@ -250,7 +250,7 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
                   >
                     {s.value}
                   </span>
-                  <span className="text-white/50 text-[9px] uppercase tracking-[0.2em] font-semibold mt-0.5">{s.label}</span>
+                  <span className="text-[#cccccc] text-[9px] uppercase tracking-[0.2em] font-semibold mt-0.5">{s.label}</span>
                 </div>
               ))}
             </div>
@@ -293,7 +293,7 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
             </h1>
           </Reveal>
           <Reveal isLoaded={isLoaded} delay={0.25}>
-            <p className="text-[8px] uppercase tracking-[0.5em] text-white/30 font-semibold mt-2">
+            <p className="text-[8px] uppercase tracking-[0.5em] text-[#cccccc] font-semibold mt-2">
               KSI &amp; Logan Paul · Est. 2022
             </p>
           </Reveal>
@@ -310,13 +310,13 @@ export default function TextOverlays({ isLoaded = false, heroRef }: TextOverlays
               ].map((s) => (
                 <div key={s.label} className="flex flex-col items-center">
                   <span className="font-bebas text-lg text-white font-bold leading-none">{s.value}</span>
-                  <span className="text-white/40 text-[8px] uppercase tracking-[0.15em] font-semibold mt-0.5">{s.label}</span>
+                  <span className="text-[#cccccc] text-[8px] uppercase tracking-[0.15em] font-semibold mt-0.5">{s.label}</span>
                 </div>
               ))}
             </div>
           </Reveal>
           <Reveal isLoaded={isLoaded} delay={0.5}>
-            <p className="text-[7px] uppercase tracking-[0.4em] text-white/20 font-semibold">
+            <p className="text-[7px] uppercase tracking-[0.4em] text-[#cccccc] font-semibold">
               Developed by Harry Lagto
             </p>
           </Reveal>

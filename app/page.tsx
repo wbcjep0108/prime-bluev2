@@ -9,6 +9,7 @@ import Navbar from '../components/Navbar';
 import PostSequenceContent from '../components/PostSequenceContent';
 import MarqueeSection from '../components/MarqueeSection';
 import ProductCarousel from '../components/ProductCarousel';
+import ScrollRevealSection from '../components/ScrollRevealSection';
 import Footer from '../components/Footer';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -44,11 +45,16 @@ export default function Home() {
       {/* Stacked cards — scroll-driven pile-up */}
       <StackedCards />
 
-      <PostSequenceContent />
-
+      {/* Marquee scroll-driven banner (horizontalscroll) */}
       <MarqueeSection />
 
+      {/* Scroll reveal — clip-from-left editorial text */}
+      <ScrollRevealSection />
+
+      {/* Horizontal product carousel (carouselcard) */}
       <ProductCarousel />
+
+      <PostSequenceContent />
 
       <Footer />
     </main>

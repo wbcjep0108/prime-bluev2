@@ -3,6 +3,9 @@
 import React, { useRef } from 'react';
 import { useScroll, useTransform, motion, useInView } from 'framer-motion';
 import { productData } from '../data/product';
+import dynamic from 'next/dynamic';
+
+const Galaxy = dynamic(() => import('./Galaxy'), { ssr: false });
 
 function TriggerReveal({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -56,31 +59,50 @@ export default function PostSequenceContent() {
     // Container is exactly 300vh (3 × 100vh sections)
     <div ref={containerRef} className="relative bg-[#020202] text-white" style={{ height: '300vh', overflowX: 'clip' }}>
 
-      {/* ── STICKY BOTTLE ──────────────────────────────────────────────────────
+      {/* ── STICKY BOTTLE & BACKGROUND ──────────────────────────────────────────
           Sticks at top:0 for the full 300vh scroll.
-          When the container ends (footer starts) it scrolls away naturally.
-          NO fade. ONE bottle. Magnet snap via clamped x transform.
       */}
-      <motion.div
-        style={{ opacity, x, rotate }}
-        className="sticky top-0 h-screen flex items-center justify-center pointer-events-none z-20"
-      >
-        {/* GPU-Accelerated aura glows instead of drop-shadow */}
-        <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[55vh] pointer-events-none" 
-          style={{ background: 'radial-gradient(ellipse at center, rgba(0,136,255,0.18) 0%, transparent 65%)', zIndex: 0 }} 
-        />
-        <div 
-          className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] h-[40vh] pointer-events-none" 
-          style={{ background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 65%)', zIndex: 0 }} 
-        />
-        
-        <img
-          src={productData.staticAssets.staticBottle}
-          alt="Prime Bottle"
-          className="max-h-[55vh] w-auto object-contain relative z-10"
-        />
-      </motion.div>
+      <div className="sticky top-0 h-screen w-full overflow-hidden z-20">
+
+        {/* Galaxy — fills viewport, pointer-events enabled so mouse works */}
+        <motion.div style={{ opacity }} className="absolute inset-0 z-0">
+          <Galaxy
+            starSpeed={0.3}
+            density={0.6}
+            hueShift={140}
+            speed={0.8}
+            glowIntensity={0.25}
+            saturation={0}
+            mouseRepulsion
+            repulsionStrength={2}
+            twinkleIntensity={0.2}
+            rotationSpeed={0.05}
+            transparent
+            style={{ width: '100%', height: '100%' }}
+          />
+        </motion.div>
+
+        {/* Bottle layer — pointer-events-none so it doesn't block galaxy mouse */}
+        <motion.div
+          style={{ opacity, x, rotate }}
+          className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+        >
+          {/* Aura glows */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[55vh]"
+            style={{ background: 'radial-gradient(ellipse at center, rgba(0,136,255,0.18) 0%, transparent 65%)' }}
+          />
+          <div
+            className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] h-[40vh]"
+            style={{ background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, transparent 65%)' }}
+          />
+          <img
+            src={productData.staticAssets.staticBottle}
+            alt="Prime Bottle"
+            className="max-h-[55vh] w-auto object-contain relative z-10"
+          />
+        </motion.div>
+      </div>
 
       {/* ── CONTENT SECTIONS ───────────────────────────────────────────────────
           Absolutely overlaid on top of the sticky bottle layer.

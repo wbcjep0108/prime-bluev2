@@ -11,42 +11,28 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const { navigateTo } = usePageTransition();
-  const navRef = useRef<HTMLElement>(null);
-  const rafRef = useRef<number | null>(null);
+  const [menuOpen, setMenuOpen]   = useState(false);
+  const [theme, setTheme]         = useState<'dark' | 'light'>('dark');
+  const { navigateTo }            = usePageTransition();
+  const navRef                    = useRef<HTMLElement>(null);
+  const rafRef                    = useRef<number | null>(null);
 
+  // ── adaptive theme ────────────────────────────────────────────────────────
   const sampleTheme = useCallback(() => {
-    /*
-     * document.elementsFromPoint() returns every element stacked at that
-     * coordinate, top→bottom in z-order. We sample the midpoint of the navbar
-     * and walk down the list, skipping the nav itself, until we find an element
-     * with a non-transparent computed background. Then we calculate its
-     * luminance to decide white or black text.
-     */
     const x = window.innerWidth / 2;
-    const y = 28; // vertical midpoint of the ~56px navbar
-
+    const y = 28;
     const elements = document.elementsFromPoint(x, y);
     for (const el of elements) {
-      // Skip nav and its descendants
       if (navRef.current && (navRef.current === el || navRef.current.contains(el))) continue;
-
       const bg = window.getComputedStyle(el).backgroundColor;
       if (!bg || bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') continue;
-
-      // Parse rgb/rgba
       const match = bg.match(/[\d.]+/g);
       if (!match || match.length < 3) continue;
-
       const r = parseFloat(match[0]);
       const g = parseFloat(match[1]);
       const b = parseFloat(match[2]);
       const a = match[4] ? parseFloat(match[4]) : 1;
-      if (a < 0.05) continue; // skip nearly-transparent backgrounds
-
-      // Relative luminance (perceived brightness)
+      if (a < 0.05) continue;
       const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
       setTheme(luminance > 0.45 ? 'light' : 'dark');
       return;
@@ -54,16 +40,12 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    // Sample on scroll (passive, no jank)
     const onScroll = () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(sampleTheme);
     };
-
     window.addEventListener('scroll', onScroll, { passive: true });
-    // Initial sample after a short delay (let page paint first)
     const t = setTimeout(sampleTheme, 300);
-
     return () => {
       window.removeEventListener('scroll', onScroll);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -90,8 +72,8 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
-  const textColor    = theme === 'light' ? '#000' : '#fff';
-  const burgerBg     = theme === 'light' ? 'bg-black' : 'bg-white';
+  const textColor = theme === 'light' ? '#000' : '#fff';
+  const burgerBg  = theme === 'light' ? 'bg-black' : 'bg-white';
 
   return (
     <motion.nav
@@ -142,22 +124,23 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Dropdown — glassmorphism style with centered text */}
       <motion.div
         initial={false}
         animate={{ height: menuOpen ? 'auto' : 0, opacity: menuOpen ? 1 : 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="md:hidden overflow-hidden bg-black/90 backdrop-blur-2xl border-t border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
+        className="md:hidden overflow-hidden bg-black/30 backdrop-blur-lg border-t border-b border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.37)]"
       >
         <ul className="flex flex-col px-8 py-6 gap-6">
           {navLinks.map((link) => (
-            <li key={link.label}>
+            <li key={link.label} className="w-full flex justify-center">
               <button
                 onClick={() => { setMenuOpen(false); navigateTo(link.href); }}
-                className="w-full text-left text-white text-xs font-semibold uppercase tracking-[0.25em] transition-all duration-300 hover:text-[#00E5FF] active:text-[#00E5FF] hover:translate-x-2 flex items-center justify-between group"
+                className="relative text-center text-white text-xs font-semibold uppercase tracking-[0.25em] transition-all duration-300 hover:text-[#00E5FF] active:text-[#00E5FF] flex items-center justify-center gap-3 group py-1"
               >
-                <span>{link.label}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] opacity-0 group-hover:opacity-100 group-active:opacity-100 shadow-[0_0_8px_#00E5FF] transition-opacity duration-300" />
+                <span className="w-1 h-1 rounded-full bg-[#00E5FF] opacity-0 group-hover:opacity-100 group-active:opacity-100 shadow-[0_0_8px_#00E5FF] transition-all duration-300 transform scale-0 group-hover:scale-100" />
+                <span className="transition-transform duration-300 group-hover:scale-105">{link.label}</span>
+                <span className="w-1 h-1 rounded-full bg-[#00E5FF] opacity-0 group-hover:opacity-100 group-active:opacity-100 shadow-[0_0_8px_#00E5FF] transition-all duration-300 transform scale-0 group-hover:scale-100" />
               </button>
             </li>
           ))}
