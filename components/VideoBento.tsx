@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useCallback, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 
 // Four panels — each plays a different segment of the same video
 const PANELS = [
@@ -23,8 +23,20 @@ function VideoPanel({
   isHovered: boolean;
   showPlayHint?: boolean;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const seededRef = useRef(false);
+  const inView = useInView(containerRef, { margin: '-10% 0px' });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Seek to the clip's start point once metadata is ready
   const handleCanPlay = useCallback(() => {
@@ -34,19 +46,21 @@ function VideoPanel({
     v.currentTime = startTime;
   }, [startTime]);
 
-  // Play / pause in sync with hover state
+  // Play / pause in sync with hover state / scroll state on mobile
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    if (isHovered) {
+    const shouldPlay = isMobile ? inView : isHovered;
+    if (shouldPlay) {
       v.play().catch(() => {});
     } else {
       v.pause();
     }
-  }, [isHovered]);
+  }, [isHovered, inView, isMobile]);
 
   return (
     <motion.div
+      ref={containerRef}
       className="relative w-full h-full overflow-hidden rounded-xl bg-[#0a0a0a]"
       initial={{ opacity: 0, scale: 0.97 }}
       whileInView={{ opacity: 1, scale: 1 }}
@@ -98,7 +112,7 @@ function VideoPanel({
           className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none transition-opacity duration-400"
           style={{ opacity: isHovered ? 0 : 1 }}
         >
-          <div className="flex items-center gap-2.5 opacity-60">
+          <div className="flex items-center gap-2.5">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="white">
               <path d="M4 2.5l10 5.5-10 5.5V2.5z" />
             </svg>
@@ -126,8 +140,8 @@ export default function VideoBento() {
         transition={{ duration: 0.7, ease: 'easeOut' }}
         className="mb-6 md:mb-8 flex items-center gap-4"
       >
-        <div className="w-8 h-[1px] bg-white/25" />
-        <span className="font-bebas uppercase tracking-[0.35em] text-white/30 text-xs md:text-sm">
+        <div className="w-8 h-[1px] bg-white" />
+        <span className="font-bebas uppercase tracking-[0.35em] text-white text-xs md:text-sm">
           The Prime World
         </span>
       </motion.div>
@@ -184,7 +198,7 @@ export default function VideoBento() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.5 }}
-        className="mt-5 text-center font-bebas uppercase tracking-[0.3em] text-white/20 text-[10px] md:text-xs select-none"
+        className="mt-5 text-center font-bebas uppercase tracking-[0.3em] text-white text-[10px] md:text-xs select-none"
       >
         Hover any panel to experience Prime
       </motion.p>

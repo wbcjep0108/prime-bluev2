@@ -5,6 +5,7 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import AboutHero from '../../components/AboutHero';
 import VideoBento from '../../components/VideoBento';
+import TiltedCard from '../../components/TiltedCard';
 
 // Stagger child elements
 const containerVariants = {
@@ -176,44 +177,51 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative bg-[#0b0b0b] rounded-lg border border-white/5 overflow-hidden p-6 md:p-8 flex flex-col justify-between aspect-[4/5] md:aspect-[3/4] hover:border-white/20 transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.02)]"
+              className="w-full aspect-[4/5] md:aspect-[3/4]"
             >
-              {/* Overlay glow */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500 z-10" />
-              
-              {/* Graphic background element: Large initial letter */}
-              <div className="absolute -right-12 -bottom-24 font-bebas font-black text-white/[0.015] text-[28rem] select-none leading-none pointer-events-none group-hover:text-white/[0.025] transition-colors duration-500">
-                L
-              </div>
-
-              {/* Founder Header */}
-              <div className="relative z-20">
-                <span className="font-bebas text-xs tracking-widest text-[#00E5FF] uppercase block mb-1">
-                  Co-Founder
-                </span>
-                <h3 className="font-bebas text-4xl md:text-5xl text-white uppercase tracking-wide">
-                  Logan Paul
-                </h3>
-              </div>
-
-              {/* Description / Bio */}
-              <div className="relative z-20 mt-auto pt-16">
-                <p className="text-white/60 text-xs md:text-sm leading-relaxed mb-6 max-w-sm">
-                  Athlete, creator, and entertainer who leverages viral power and strategic business drive to elevate products from simple ideas to record-breaking cultural sensations.
-                </p>
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-bebas uppercase tracking-widest text-white/40">
-                    Socials:
-                  </span>
-                  <a href="https://instagram.com/loganpaul" target="_blank" rel="noreferrer" className="text-white/60 hover:text-white text-xs transition-colors font-medium">
-                    Instagram
-                  </a>
-                  <span className="text-white/20">|</span>
-                  <a href="https://youtube.com/loganpaul" target="_blank" rel="noreferrer" className="text-white/60 hover:text-white text-xs transition-colors font-medium">
-                    YouTube
-                  </a>
-                </div>
-              </div>
+              <TiltedCard
+                imageSrc="/assets/creators/logan.png"
+                altText="Logan Paul"
+                captionText="Logan Paul"
+                containerHeight="100%"
+                containerWidth="100%"
+                imageHeight="100%"
+                imageWidth="100%"
+                showTooltip={true}
+                displayOverlayContent={true}
+                overlayContent={
+                  <div className="flex flex-col justify-between h-full w-full relative z-20 text-left">
+                    <div className="absolute -right-6 -bottom-16 font-bebas font-black text-white/[0.015] text-[24rem] select-none leading-none pointer-events-none">
+                      L
+                    </div>
+                    <div>
+                      <span className="font-bebas text-xs tracking-widest text-[#00E5FF] uppercase block mb-1">
+                        Co-Founder
+                      </span>
+                      <h3 className="font-bebas text-4xl md:text-5xl text-white uppercase tracking-wide">
+                        Logan Paul
+                      </h3>
+                    </div>
+                    <div className="mt-auto">
+                      <p className="text-white/80 text-xs md:text-sm leading-relaxed mb-6 max-w-sm font-medium drop-shadow-md">
+                        Athlete, creator, and entertainer who leverages viral power and strategic business drive to elevate products from simple ideas to record-breaking cultural sensations.
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-bebas uppercase tracking-widest text-white/40">
+                          Socials:
+                        </span>
+                        <a href="https://instagram.com/loganpaul" target="_blank" rel="noreferrer" className="text-white/85 hover:text-white text-xs transition-colors font-semibold">
+                          Instagram
+                        </a>
+                        <span className="text-white/20">|</span>
+                        <a href="https://youtube.com/loganpaul" target="_blank" rel="noreferrer" className="text-white/85 hover:text-white text-xs transition-colors font-semibold">
+                          YouTube
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                }
+              />
             </motion.div>
 
             {/* Founder 2: KSI */}
@@ -222,44 +230,51 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative bg-[#0b0b0b] rounded-lg border border-white/5 overflow-hidden p-6 md:p-8 flex flex-col justify-between aspect-[4/5] md:aspect-[3/4] hover:border-white/20 transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.02)]"
+              className="w-full aspect-[4/5] md:aspect-[3/4]"
             >
-              {/* Overlay glow */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500 z-10" />
-
-              {/* Graphic background element: Large initial letter */}
-              <div className="absolute -right-12 -bottom-24 font-bebas font-black text-white/[0.015] text-[28rem] select-none leading-none pointer-events-none group-hover:text-white/[0.025] transition-colors duration-500">
-                K
-              </div>
-
-              {/* Founder Header */}
-              <div className="relative z-20">
-                <span className="font-bebas text-xs tracking-widest text-[#00E5FF] uppercase block mb-1">
-                  Co-Founder
-                </span>
-                <h3 className="font-bebas text-4xl md:text-5xl text-white uppercase tracking-wide">
-                  KSI
-                </h3>
-              </div>
-
-              {/* Description / Bio */}
-              <div className="relative z-20 mt-auto pt-16">
-                <p className="text-white/60 text-xs md:text-sm leading-relaxed mb-6 max-w-sm">
-                  Musician, professional boxer, and content pioneer who brings creative authenticity and unstoppable global fandom to disrupt the landscape and challenge industry giants.
-                </p>
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-bebas uppercase tracking-widest text-white/40">
-                    Socials:
-                  </span>
-                  <a href="https://instagram.com/ksi" target="_blank" rel="noreferrer" className="text-white/60 hover:text-white text-xs transition-colors font-medium">
-                    Instagram
-                  </a>
-                  <span className="text-white/20">|</span>
-                  <a href="https://youtube.com/ksi" target="_blank" rel="noreferrer" className="text-white/60 hover:text-white text-xs transition-colors font-medium">
-                    YouTube
-                  </a>
-                </div>
-              </div>
+              <TiltedCard
+                imageSrc="/assets/creators/ksi.png"
+                altText="KSI"
+                captionText="KSI"
+                containerHeight="100%"
+                containerWidth="100%"
+                imageHeight="100%"
+                imageWidth="100%"
+                showTooltip={true}
+                displayOverlayContent={true}
+                overlayContent={
+                  <div className="flex flex-col justify-between h-full w-full relative z-20 text-left">
+                    <div className="absolute -right-6 -bottom-16 font-bebas font-black text-white/[0.015] text-[24rem] select-none leading-none pointer-events-none">
+                      K
+                    </div>
+                    <div>
+                      <span className="font-bebas text-xs tracking-widest text-[#00E5FF] uppercase block mb-1">
+                        Co-Founder
+                      </span>
+                      <h3 className="font-bebas text-4xl md:text-5xl text-white uppercase tracking-wide">
+                        KSI
+                      </h3>
+                    </div>
+                    <div className="mt-auto">
+                      <p className="text-white/80 text-xs md:text-sm leading-relaxed mb-6 max-w-sm font-medium drop-shadow-md">
+                        Musician, professional boxer, and content pioneer who brings creative authenticity and unstoppable global fandom to disrupt the landscape and challenge industry giants.
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-bebas uppercase tracking-widest text-white/40">
+                          Socials:
+                        </span>
+                        <a href="https://instagram.com/ksi" target="_blank" rel="noreferrer" className="text-white/85 hover:text-white text-xs transition-colors font-semibold">
+                          Instagram
+                        </a>
+                        <span className="text-white/20">|</span>
+                        <a href="https://youtube.com/ksi" target="_blank" rel="noreferrer" className="text-white/85 hover:text-white text-xs transition-colors font-semibold">
+                          YouTube
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                }
+              />
             </motion.div>
 
           </div>

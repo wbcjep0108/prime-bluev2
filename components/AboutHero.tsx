@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
+import Magnet from './Magnet';
 
-const TITLE = 'ABOUT US';
+const TITLE = 'ABOUT    US';
 const LETTERS = TITLE.split('');
 
 // Container stagger
@@ -55,6 +56,16 @@ const hintVariants = {
 export default function AboutHero() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-5% 0px' });
+  const [animationDone, setAnimationDone] = useState(false);
+
+  useEffect(() => {
+    if (inView) {
+      const timer = setTimeout(() => {
+        setAnimationDone(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [inView]);
 
   return (
     <section
@@ -96,19 +107,21 @@ export default function AboutHero() {
           ) : (
             <span
               key={i}
-              style={{ overflow: 'hidden', display: 'inline-block', lineHeight: 0.9 }}
+              style={{ overflow: animationDone ? 'visible' : 'hidden', display: 'inline-block', lineHeight: 0.9 }}
             >
-              <motion.span
-                variants={letterVariants}
-                className="block font-bebas font-black uppercase text-white select-none"
-                style={{
-                  fontSize: 'clamp(5rem, 18vw, 18rem)',
-                  letterSpacing: '-0.02em',
-                  willChange: 'transform',
-                }}
-              >
-                {char}
-              </motion.span>
+              <Magnet disabled={!animationDone} magnetStrength={3} padding={80}>
+                <motion.span
+                  variants={letterVariants}
+                  className="block font-bebas font-black uppercase text-white select-none"
+                  style={{
+                    fontSize: 'clamp(5rem, 18vw, 18rem)',
+                    letterSpacing: '-0.02em',
+                    willChange: 'transform',
+                  }}
+                >
+                  {char}
+                </motion.span>
+              </Magnet>
             </span>
           )
         )}
