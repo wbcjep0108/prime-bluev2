@@ -3,9 +3,7 @@
 import React, { useRef } from 'react';
 import { useScroll, useTransform, motion, useInView } from 'framer-motion';
 import { productData } from '../data/product';
-import dynamic from 'next/dynamic';
 
-const Galaxy = dynamic(() => import('./Galaxy'), { ssr: false });
 
 function TriggerReveal({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -64,23 +62,7 @@ export default function PostSequenceContent() {
       */}
       <div className="sticky top-0 h-screen w-full overflow-hidden z-20">
 
-        {/* Galaxy — fills viewport, pointer-events enabled so mouse works */}
-        <motion.div style={{ opacity }} className="absolute inset-0 z-0">
-          <Galaxy
-            starSpeed={0.3}
-            density={0.6}
-            hueShift={140}
-            speed={0.8}
-            glowIntensity={0.25}
-            saturation={0}
-            mouseRepulsion
-            repulsionStrength={2}
-            twinkleIntensity={0.2}
-            rotationSpeed={0.05}
-            transparent
-            style={{ width: '100%', height: '100%' }}
-          />
-        </motion.div>
+
 
         {/* Bottle layer — pointer-events-none so it doesn't block galaxy mouse */}
         <motion.div

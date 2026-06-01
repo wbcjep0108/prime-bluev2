@@ -16,7 +16,7 @@ function RevealRow({
   end: number;
 }) {
   const rawY = useTransform(progress, [start, end], ['105%', '0%']);
-  const y = useSpring(rawY, { stiffness: 45, damping: 24, mass: 0.7 });
+  const y = useSpring(rawY, { stiffness: 80, damping: 20, mass: 0.5 });
 
   return (
     // overflow-hidden is the "floor" that hides text below it
@@ -51,7 +51,7 @@ export default function ScrollRevealSection() {
       <div className="max-w-[1400px] w-full flex flex-col gap-2 md:gap-4 select-none px-4">
 
         {/* Row 1 — first to rise */}
-        <RevealRow progress={scrollYProgress} start={0.02} end={0.35}>
+        <RevealRow progress={scrollYProgress} start={0.03} end={0.18}>
           <span
             className="font-bebas font-black uppercase tracking-tight text-white leading-none"
             style={{ fontSize: FONT_SIZE, fontFamily: FONT_FAMILY }}
@@ -68,7 +68,7 @@ export default function ScrollRevealSection() {
         </RevealRow>
 
         {/* Row 2 — rises slightly after row 1 */}
-        <RevealRow progress={scrollYProgress} start={0.12} end={0.45}>
+        <RevealRow progress={scrollYProgress} start={0.08} end={0.23}>
           <div
             className="text-left font-sans tracking-[0.3em] text-white/40 uppercase font-semibold leading-tight self-center"
             style={{ fontSize: LABEL_SIZE }}
@@ -85,7 +85,7 @@ export default function ScrollRevealSection() {
         </RevealRow>
 
         {/* Row 3 — rises last */}
-        <RevealRow progress={scrollYProgress} start={0.22} end={0.55}>
+        <RevealRow progress={scrollYProgress} start={0.13} end={0.28}>
           <span
             className="font-bebas font-black uppercase tracking-tight text-white leading-none"
             style={{ fontSize: FONT_SIZE, fontFamily: FONT_FAMILY }}

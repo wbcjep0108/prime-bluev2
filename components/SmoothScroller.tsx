@@ -29,13 +29,6 @@ export default function SmoothScroller() {
 
     lenis.on('scroll', handleScroll);
 
-    // We can also manually call raf if autoRaf is not available in this version:
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-
     return () => {
       if (scrollTimeout) clearTimeout(scrollTimeout);
       lenis.off('scroll', handleScroll);

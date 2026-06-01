@@ -51,7 +51,7 @@ function ScrubWord({
   // Cap the end at 0.95 so the last word fully illuminates just before the absolute end of the scroll.
   // Using 1.2 for the overlap so the fade-in feels natural.
   const end = Math.min(0.95, (index + 1.2) / total);
-  const opacity = useTransform(progress, [start, end], [0.1, 1]);
+  const opacity = useTransform(progress, [start, end], [0, 1]);
 
   return (
     <motion.span

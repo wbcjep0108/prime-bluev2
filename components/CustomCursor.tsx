@@ -35,11 +35,10 @@ export default function CustomCursor() {
       target.current.x = e.clientX;
       target.current.y = e.clientY;
 
-      // Detect whether we are hovering a "clickable" element.
-      const node = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
-      const clickableEl = node?.closest(
+      // Detect whether we are hovering a "clickable" element using the event target (zero-reflow)
+      const clickableEl = (e.target as HTMLElement | null)?.closest(
         'a,button,[role="button"],[role="link"],input,textarea,select,[data-clickable="true"],.cursor-pointer'
-      ) as HTMLElement | null;
+      );
 
       setClickable(Boolean(clickableEl));
     };
