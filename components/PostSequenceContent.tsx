@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { useScroll, useTransform, motion, useInView } from 'framer-motion';
 import { productData } from '../data/product';
+import ParticleField from './ParticleField';
 
 
 function TriggerReveal({ children }: { children: React.ReactNode }) {
@@ -61,6 +62,9 @@ export default function PostSequenceContent() {
           Sticks at top:0 for the full 300vh scroll.
       */}
       <div className="sticky top-0 h-screen w-full overflow-hidden z-20">
+
+        {/* Light particle field — mouse-magnetised, GPU composited */}
+        <ParticleField density={0.5} magnetRadius={200} magnetStrength={0.14} />
 
 
 
