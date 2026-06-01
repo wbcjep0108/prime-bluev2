@@ -10,6 +10,7 @@ import PostSequenceContent from '../components/PostSequenceContent';
 import MarqueeSection from '../components/MarqueeSection';
 import ProductCarousel from '../components/ProductCarousel';
 import ScrollRevealSection from '../components/ScrollRevealSection';
+import VideoBento from '../components/VideoBento';
 import Footer from '../components/Footer';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -47,6 +48,9 @@ export default function Home() {
 
       {/* Marquee scroll-driven banner (horizontalscroll) */}
       <MarqueeSection />
+
+      {/* Video bento — synchronized split player */}
+      <VideoBento />
 
       {/* Scroll reveal — clip-from-left editorial text */}
       <ScrollRevealSection />

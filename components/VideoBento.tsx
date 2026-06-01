@@ -67,8 +67,10 @@ function VideoPanel({
       <video
         ref={videoRef}
         src="/videos/ad.mp4"
+        type="video/mp4"
         muted
         loop
+        autoPlay
         playsInline
         preload="metadata"
         onCanPlay={handleCanPlay}
@@ -149,29 +151,29 @@ export default function VideoBento() {
             "bottom bottom"
           `,
           gridTemplateColumns: '1fr 1fr',
-          gridTemplateRows: '2fr 1.15fr 2fr',
-          maxHeight: '92vh',
+          gridTemplateRows: '1fr auto 1fr',
+          minHeight: '100vh',
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* TOP */}
-        <div style={{ gridArea: 'top' }}>
+        <div style={{ gridArea: 'top', minHeight: '38vh' }} className="h-full">
           <VideoPanel startTime={0} index={0} isHovered={isHovered} showPlayHint />
         </div>
 
-        {/* MID LEFT */}
-        <div style={{ gridArea: 'mid-l' }}>
+        {/* MID LEFT — square */}
+        <div style={{ gridArea: 'mid-l', aspectRatio: '1 / 1' }}>
           <VideoPanel startTime={8} index={1} isHovered={isHovered} />
         </div>
 
-        {/* MID RIGHT */}
-        <div style={{ gridArea: 'mid-r' }}>
+        {/* MID RIGHT — square */}
+        <div style={{ gridArea: 'mid-r', aspectRatio: '1 / 1' }}>
           <VideoPanel startTime={18} index={2} isHovered={isHovered} />
         </div>
 
         {/* BOTTOM */}
-        <div style={{ gridArea: 'bottom' }}>
+        <div style={{ gridArea: 'bottom', minHeight: '38vh' }} className="h-full">
           <VideoPanel startTime={28} index={3} isHovered={isHovered} />
         </div>
       </div>
