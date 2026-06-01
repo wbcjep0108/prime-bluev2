@@ -64,7 +64,7 @@ export default function PostSequenceContent() {
       <div className="sticky top-0 h-screen w-full overflow-hidden z-20">
 
         {/* Light particle field — mouse-magnetised, GPU composited */}
-        <ParticleField density={0.8} magnetRadius={280} magnetStrength={0.3} />
+        <ParticleField density={0.9} magnetRadius={300} magnetStrength={0.45} />
 
 
 

@@ -5,24 +5,40 @@ import { useEffect, useRef } from 'react';
 interface Particle {
   x: number;
   y: number;
-  ox: number;   // resting origin x
-  oy: number;   // resting origin y
+  ox: number;   // resting origin
+  oy: number;
   vx: number;
   vy: number;
-  r: number;    // radius
-  a: number;    // alpha
+  r: number;    // display radius (matches sprite scale)
+  a: number;    // alpha 0‥1
 }
 
 interface Props {
-  density?: number;        // 0‥1 — fraction of max particles  (default 0.8)
-  magnetRadius?: number;   // px — attraction zone             (default 250)
-  magnetStrength?: number; // 0‥1 — pull force                (default 0.28)
+  density?: number;        // 0‥1   default 0.9
+  magnetRadius?: number;   // px    default 300
+  magnetStrength?: number; // 0‥1   default 0.45
+}
+
+// ── Pre-bake a single white-glow sprite (done once, re-used every draw) ────────
+function makeSprite(size: number): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const cx = c.getContext('2d')!;
+  const half = size / 2;
+  const gr = cx.createRadialGradient(half, half, 0, half, half, half);
+  gr.addColorStop(0,   'rgba(255,255,255,1)');
+  gr.addColorStop(0.3, 'rgba(255,255,255,0.85)');
+  gr.addColorStop(0.7, 'rgba(255,255,255,0.25)');
+  gr.addColorStop(1,   'rgba(255,255,255,0)');
+  cx.fillStyle = gr;
+  cx.fillRect(0, 0, size, size);
+  return c;
 }
 
 export default function ParticleField({
-  density = 0.8,
-  magnetRadius = 250,
-  magnetStrength = 0.28,
+  density        = 0.9,
+  magnetRadius   = 300,
+  magnetStrength = 0.45,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -32,14 +48,14 @@ export default function ParticleField({
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    // ── DPR-aware sizing ────────────────────────────────────────────────────────
+    // ── sizing ──────────────────────────────────────────────────────────────────
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let W = 0, H = 0, offX = 0, offY = 0;
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      W    = rect.width;
-      H    = rect.height;
+      W = rect.width;
+      H = rect.height;
       offX = rect.left;
       offY = rect.top;
       canvas.width  = Math.round(W * dpr);
@@ -48,33 +64,50 @@ export default function ParticleField({
     };
     resize();
 
-    // ── spawn particles ─────────────────────────────────────────────────────────
+    // ── sprite — one allocation, used for every particle every frame ────────────
+    const SPRITE_SIZE = 48; // px — baked halo diameter
+    const sprite = makeSprite(SPRITE_SIZE);
+    const half = SPRITE_SIZE / 2;
+
+    // ── particles ───────────────────────────────────────────────────────────────
     const rand = (a: number, b: number) => a + Math.random() * (b - a);
-    // ~1 particle per 8 000 px² at density=1, cap at 300
-    const count = Math.min(Math.round((W * H / 8_000) * density), 300);
+    // ~1 particle per 5 500 px² at density=1, hard cap 350
+    const count = Math.min(Math.round((W * H / 5_500) * density), 350);
 
     const particles: Particle[] = Array.from({ length: count }, () => {
       const ox = rand(0, W);
       const oy = rand(0, H);
-      return { x: ox, y: oy, ox, oy, vx: 0, vy: 0, r: rand(1.5, 3.5), a: rand(0.3, 0.7) };
+      return {
+        x: ox, y: oy,
+        ox, oy,
+        vx: rand(-0.08, 0.08),
+        vy: rand(-0.08, 0.08),
+        r: rand(2, 5),
+        a: rand(0.45, 0.95),
+      };
     });
 
-    // ── mouse — listen on WINDOW so nothing blocks events ──────────────────────
+    // ── mouse — window listener, nothing can block it ───────────────────────────
     const mouse = { x: -99999, y: -99999, active: false };
 
     const onMove = (e: MouseEvent) => {
-      mouse.x = e.clientX - offX;
-      mouse.y = e.clientY - offY;
+      mouse.x      = e.clientX - offX;
+      mouse.y      = e.clientY - offY;
       mouse.active = true;
     };
-    const onLeave = () => { mouse.active = false; mouse.x = -99999; mouse.y = -99999; };
+    const onLeave = () => {
+      mouse.active = false;
+      mouse.x      = -99999;
+      mouse.y      = -99999;
+    };
 
-    window.addEventListener('mousemove', onMove, { passive: true });
-    window.addEventListener('mouseleave', onLeave, { passive: true });
+    window.addEventListener('mousemove',  onMove,   { passive: true });
+    window.addEventListener('mouseleave', onLeave,  { passive: true });
 
     // ── render loop ─────────────────────────────────────────────────────────────
-    const MR2 = magnetRadius * magnetRadius;
-    let raf = 0;
+    const MR  = magnetRadius;
+    const MR2 = MR * MR;
+    let raf   = 0;
 
     const tick = () => {
       ctx.clearRect(0, 0, W, H);
@@ -85,35 +118,33 @@ export default function ParticleField({
         const d2 = dx * dx + dy * dy;
 
         if (mouse.active && d2 < MR2 && d2 > 0.01) {
-          const dist   = Math.sqrt(d2);
-          const inv    = 1 - dist / magnetRadius;      // 1 at cursor → 0 at edge
-          const force  = inv * inv * magnetStrength;   // quadratic, peaks at cursor
-          p.vx += (dx / dist) * force * dist * 0.06;
-          p.vy += (dy / dist) * force * dist * 0.06;
+          const dist  = Math.sqrt(d2);
+          // Linear falloff: full strength at cursor, zero at edge.
+          // Multiply by dist so far-away particles move less (natural feel).
+          const t     = 1 - dist / MR;
+          const force = t * magnetStrength;
+          p.vx += (dx / dist) * force * 4.5;
+          p.vy += (dy / dist) * force * 4.5;
         }
 
-        // Spring back to resting origin
-        p.vx += (p.ox - p.x) * 0.022;
-        p.vy += (p.oy - p.y) * 0.022;
+        // Spring back toward resting origin (fights the magnet when mouse is gone)
+        p.vx += (p.ox - p.x) * 0.024;
+        p.vy += (p.oy - p.y) * 0.024;
 
-        // Damping
-        p.vx *= 0.84;
-        p.vy *= 0.84;
+        // Friction — keeps velocity bounded, motion silky
+        p.vx *= 0.82;
+        p.vy *= 0.82;
 
         p.x += p.vx;
         p.y += p.vy;
 
-        // Glow: inner bright core + soft outer halo
-        const gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.5);
-        gr.addColorStop(0, `rgba(255,255,255,${p.a})`);
-        gr.addColorStop(1, 'rgba(255,255,255,0)');
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = gr;
-        ctx.fill();
+        // Draw: drawImage from sprite — zero per-frame GPU allocation
+        ctx.globalAlpha = p.a;
+        const hw = p.r * (SPRITE_SIZE / 4); // scale sprite to particle radius
+        ctx.drawImage(sprite, p.x - hw, p.y - hw, hw * 2, hw * 2);
       }
 
+      ctx.globalAlpha = 1;
       raf = requestAnimationFrame(tick);
     };
 
@@ -131,7 +162,7 @@ export default function ParticleField({
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mousemove',  onMove);
       window.removeEventListener('mouseleave', onLeave);
       ro.disconnect();
     };
@@ -140,6 +171,7 @@ export default function ParticleField({
   return (
     <canvas
       ref={canvasRef}
+      /* pointer-events-none so clicks pass through to content above */
       className="absolute inset-0 w-full h-full pointer-events-none z-0"
       style={{ mixBlendMode: 'screen' }}
       aria-hidden="true"
