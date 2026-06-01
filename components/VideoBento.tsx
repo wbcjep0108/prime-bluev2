@@ -67,7 +67,7 @@ function VideoPanel({
       <video
         ref={videoRef}
         src="/videos/ad.mp4"
-        type="video/mp4"
+
         muted
         loop
         autoPlay
