@@ -69,6 +69,18 @@ export default function AboutPage() {
               <p className="text-sm md:text-base text-white/60 leading-relaxed font-medium max-w-sm">
                 How two of the internet's biggest adversaries came together to challenge the beverage giants and change the culture forever.
               </p>
+              <div className="mt-8 overflow-hidden rounded-lg border border-white/10 group max-w-sm">
+                <img
+                  src="/assets/creators/ksivlogan1.png"
+                  alt="From rivalry to brothers"
+                  className="w-full h-auto object-cover transition-all duration-500 group-hover:scale-105"
+                />
+                <div className="p-3 bg-white/[0.02] border-t border-white/5">
+                  <p className="text-center font-bebas uppercase text-white text-xs tracking-wider">
+                    From rivalry to brothers.
+                  </p>
+                </div>
+              </div>
             </motion.div>
           </div>
 
