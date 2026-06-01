@@ -40,7 +40,12 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    let lastChecked = 0;
     const onScroll = () => {
+      const now = Date.now();
+      if (now - lastChecked < 200) return;
+      lastChecked = now;
+
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(sampleTheme);
     };

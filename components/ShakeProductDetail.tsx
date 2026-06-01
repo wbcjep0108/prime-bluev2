@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -37,7 +37,7 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
-function ProductViewImage({
+const ProductViewImage = memo(function ProductViewImage({
   slug,
   view,
   label,
@@ -76,7 +76,7 @@ function ProductViewImage({
       className="h-full w-full object-contain p-6 md:p-10 pointer-events-none select-none"
     />
   );
-}
+});
 
 const breadcrumbLinkClass =
   "text-xs font-semibold uppercase tracking-[0.2em] text-white hover-underline transition-all duration-500 bg-transparent border-none p-0 cursor-pointer";
@@ -92,23 +92,22 @@ export default function ShakeProductDetail({ product }: { product: ShakeProduct 
   const accent = product.bg;
   const AMAZON_PRIME_PRODUCT_URL = product.amazonUrl;
 
-  const goToView = (idx: number) => {
+  const goToView = useCallback((idx: number) => {
     setPage([idx, idx > activeIndex ? 1 : -1]);
-  };
+  }, [activeIndex]);
 
   const paginate = useCallback((newDirection: number) => {
     setPage(([prevPage]) => [prevPage + newDirection, newDirection]);
   }, []);
 
-  const handleDragEnd = (e: any, { offset, velocity }: any) => {
+  const handleDragEnd = useCallback((e: any, { offset, velocity }: any) => {
     const swipe = Math.abs(offset.x) * velocity.x;
     if (swipe < -10000) {
       paginate(1);
     } else if (swipe > 10000) {
       paginate(-1);
     }
-  };
-
+  }, [paginate]);
   useEffect(() => {
     const interval = setInterval(() => {
       paginate(1);

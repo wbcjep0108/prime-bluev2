@@ -3,149 +3,116 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-// 3 columns × 2 rows = 6 cells
-// Each cell shows a unique region of the video frame:
-//   video is 300% wide × 200% tall inside the cell
-//   left = -(col * 100%),  top = -(row * 100%)
-const CELLS = [
-  { col: 0, row: 0 },
-  { col: 1, row: 0 },
-  { col: 2, row: 0 },
-  { col: 0, row: 1 },
-  { col: 1, row: 1 },
-  { col: 2, row: 1 },
-];
+// Four panels — each plays a different segment of the same video
+const PANELS = [
+  { id: 'top',    startTime: 0  },
+  { id: 'mid-l',  startTime: 8  },
+  { id: 'mid-r',  startTime: 18 },
+  { id: 'bottom', startTime: 28 },
+] as const;
 
-interface BentoCellProps {
-  col: number;
-  row: number;
-  videoSrc: string;
-  videoRef: (el: HTMLVideoElement | null) => void;
-  isHovered: boolean;
-  onCellEnter: () => void;
-  onCellLeave: () => void;
-  index: number;
-}
-
-function BentoCell({
-  col,
-  row,
-  videoSrc,
-  videoRef,
-  isHovered,
-  onCellEnter,
-  onCellLeave,
+// ─── Individual video panel ───────────────────────────────────────────────────
+function VideoPanel({
+  startTime,
   index,
-}: BentoCellProps) {
+  isHovered,
+  showPlayHint,
+}: {
+  startTime: number;
+  index: number;
+  isHovered: boolean;
+  showPlayHint?: boolean;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const seededRef = useRef(false);
+
+  // Seek to the clip's start point once metadata is ready
+  const handleCanPlay = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || seededRef.current) return;
+    seededRef.current = true;
+    v.currentTime = startTime;
+  }, [startTime]);
+
+  // Play / pause in sync with hover state
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (isHovered) {
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
+  }, [isHovered]);
+
   return (
     <motion.div
-      className="relative overflow-hidden rounded-lg bg-black cursor-pointer"
-      onMouseEnter={onCellEnter}
-      onMouseLeave={onCellLeave}
-      initial={{ opacity: 0, scale: 0.96 }}
+      className="relative w-full h-full overflow-hidden rounded-xl bg-[#0a0a0a]"
+      initial={{ opacity: 0, scale: 0.97 }}
       whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true, margin: '-8% 0px' }}
-      transition={{ duration: 0.6, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: '-5% 0px' }}
+      transition={{
+        duration: 0.75,
+        delay: index * 0.1,
+        ease: [0.16, 1, 0.3, 1],
+      }}
       style={{
         boxShadow: isHovered
-          ? '0 0 0 1.5px rgba(255,255,255,0.4), 0 0 32px rgba(255,255,255,0.06)'
-          : '0 0 0 1px rgba(255,255,255,0.06)',
-        transition: 'box-shadow 0.35s ease',
+          ? '0 0 0 1.5px rgba(255,255,255,0.3), 0 0 40px rgba(255,255,255,0.06)'
+          : '0 0 0 1px rgba(255,255,255,0.07)',
+        transition: 'box-shadow 0.4s ease',
       }}
     >
-      {/* Hover overlay — subtle bright veil */}
-      <div
-        className="absolute inset-0 z-10 pointer-events-none transition-opacity duration-300"
-        style={{ background: 'rgba(255,255,255,0.04)', opacity: isHovered ? 1 : 0 }}
-      />
-
-      {/* Paused overlay with play hint */}
-      <div
-        className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none transition-opacity duration-300"
-        style={{ opacity: isHovered ? 0 : 1 }}
-      >
-        <div
-          className="absolute inset-0"
-          style={{ background: 'rgba(0,0,0,0.22)' }}
-        />
-        {/* Show tiny play icon only on first cell */}
-        {index === 0 && (
-          <div className="relative z-20 flex items-center gap-2 opacity-60">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="white">
-              <path d="M4 2.5l10 5.5-10 5.5V2.5z" />
-            </svg>
-            <span className="font-bebas uppercase tracking-[0.25em] text-white text-xs">
-              Hover to play
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* Video — windowed to this cell's quadrant */}
+      {/* Video */}
       <video
         ref={videoRef}
-        src={videoSrc}
+        src="/videos/ad.mp4"
         muted
         loop
         playsInline
         preload="metadata"
-        className="absolute pointer-events-none"
+        onCanPlay={handleCanPlay}
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+      />
+
+      {/* Dark veil when paused */}
+      <div
+        className="absolute inset-0 z-10 pointer-events-none transition-opacity duration-500"
+        style={{ background: 'rgba(0,0,0,0.38)', opacity: isHovered ? 0 : 1 }}
+      />
+
+      {/* Hover glow rim */}
+      <div
+        className="absolute inset-0 z-10 pointer-events-none rounded-xl transition-opacity duration-400"
         style={{
-          width: '300%',
-          height: '200%',
-          left: `${-col * 100}%`,
-          top: `${-row * 100}%`,
-          objectFit: 'fill',
-          willChange: 'transform',
+          background: 'rgba(255,255,255,0.025)',
+          opacity: isHovered ? 1 : 0,
         }}
       />
+
+      {/* "Hover to play" hint on first panel only */}
+      {showPlayHint && (
+        <div
+          className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none transition-opacity duration-400"
+          style={{ opacity: isHovered ? 0 : 1 }}
+        >
+          <div className="flex items-center gap-2.5 opacity-60">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="white">
+              <path d="M4 2.5l10 5.5-10 5.5V2.5z" />
+            </svg>
+            <span className="font-bebas uppercase tracking-[0.28em] text-white text-[11px]">
+              Hover to play
+            </span>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
 
+// ─── Main component ───────────────────────────────────────────────────────────
 export default function VideoBento() {
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const [hoveredGrid, setHoveredGrid] = useState(false);
-  const gridRef = useRef<HTMLDivElement>(null);
-
-  const setVideoRef = useCallback(
-    (index: number) => (el: HTMLVideoElement | null) => {
-      videoRefs.current[index] = el;
-    },
-    []
-  );
-
-  const playAll = useCallback(() => {
-    setHoveredGrid(true);
-    videoRefs.current.forEach((v) => {
-      if (v && v.paused) {
-        v.play().catch(() => {});
-      }
-    });
-  }, []);
-
-  const pauseAll = useCallback(() => {
-    setHoveredGrid(false);
-    videoRefs.current.forEach((v) => {
-      if (v && !v.paused) {
-        v.pause();
-      }
-    });
-  }, []);
-
-  // Sync all videos to the first video's currentTime when they first load
-  useEffect(() => {
-    const primary = videoRefs.current[0];
-    if (!primary) return;
-    const onPlay = () => {
-      const t = primary.currentTime;
-      videoRefs.current.slice(1).forEach((v) => {
-        if (v) v.currentTime = t;
-      });
-    };
-    primary.addEventListener('play', onPlay);
-    return () => primary.removeEventListener('play', onPlay);
-  }, []);
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <section className="w-full bg-[#060606] py-16 md:py-24 px-4 md:px-8 lg:px-16">
@@ -163,31 +130,50 @@ export default function VideoBento() {
         </span>
       </motion.div>
 
-      {/* Bento grid */}
+      {/*
+        Layout:
+          ┌──────────────────────┐
+          │       TOP (big)      │
+          ├──────────┬───────────┤
+          │ MID LEFT │ MID RIGHT │
+          ├──────────┴───────────┤
+          │      BOTTOM (big)    │
+          └──────────────────────┘
+      */}
       <div
-        ref={gridRef}
-        className="grid gap-3"
+        className="grid gap-3 w-full"
         style={{
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gridTemplateRows: 'repeat(2, 1fr)',
-          // Maintain 16:9 across the whole grid
-          aspectRatio: '16 / 9',
-          maxHeight: '78vh',
+          gridTemplateAreas: `
+            "top    top"
+            "mid-l  mid-r"
+            "bottom bottom"
+          `,
+          gridTemplateColumns: '1fr 1fr',
+          gridTemplateRows: '2fr 1.15fr 2fr',
+          maxHeight: '92vh',
         }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        {CELLS.map((cell, i) => (
-          <BentoCell
-            key={i}
-            index={i}
-            col={cell.col}
-            row={cell.row}
-            videoSrc="/videos/ad.mp4"
-            videoRef={setVideoRef(i)}
-            isHovered={hoveredGrid}
-            onCellEnter={playAll}
-            onCellLeave={pauseAll}
-          />
-        ))}
+        {/* TOP */}
+        <div style={{ gridArea: 'top' }}>
+          <VideoPanel startTime={0} index={0} isHovered={isHovered} showPlayHint />
+        </div>
+
+        {/* MID LEFT */}
+        <div style={{ gridArea: 'mid-l' }}>
+          <VideoPanel startTime={8} index={1} isHovered={isHovered} />
+        </div>
+
+        {/* MID RIGHT */}
+        <div style={{ gridArea: 'mid-r' }}>
+          <VideoPanel startTime={18} index={2} isHovered={isHovered} />
+        </div>
+
+        {/* BOTTOM */}
+        <div style={{ gridArea: 'bottom' }}>
+          <VideoPanel startTime={28} index={3} isHovered={isHovered} />
+        </div>
       </div>
 
       {/* Caption */}
