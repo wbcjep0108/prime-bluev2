@@ -165,14 +165,14 @@ export default function VideoBento() {
             "bottom bottom"
           `,
           gridTemplateColumns: '1fr 1fr',
-          gridTemplateRows: '1fr auto 1fr',
+          gridTemplateRows: '45vh auto 45vh',
           minHeight: '100vh',
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* TOP */}
-        <div style={{ gridArea: 'top', minHeight: '38vh' }} className="h-full">
+        <div style={{ gridArea: 'top', minHeight: '45vh' }} className="h-full">
           <VideoPanel startTime={0} index={0} isHovered={isHovered} showPlayHint />
         </div>
 
@@ -187,7 +187,7 @@ export default function VideoBento() {
         </div>
 
         {/* BOTTOM */}
-        <div style={{ gridArea: 'bottom', minHeight: '38vh' }} className="h-full">
+        <div style={{ gridArea: 'bottom', minHeight: '45vh' }} className="h-full">
           <VideoPanel startTime={28} index={3} isHovered={isHovered} />
         </div>
       </div>
