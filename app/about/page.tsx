@@ -66,21 +66,18 @@ export default function AboutPage() {
                 <span className="text-white/40">Brothers.</span>
               </h2>
               <div className="w-12 h-[2px] bg-white mt-8 mb-6 origin-left" />
-              <p className="text-sm md:text-base text-white/60 leading-relaxed font-medium max-w-sm">
+              <p className="text-sm md:text-base text-white/60 leading-relaxed font-medium max-w-full">
                 How two of the internet's biggest adversaries came together to challenge the beverage giants and change the culture forever.
               </p>
-              <div className="mt-8 overflow-hidden rounded-lg border border-white/10 group max-w-sm">
+
+              <div className="mt-8 overflow-hidden rounded-lg border border-white/10 group max-w-3xl mx-auto">
                 <img
-                  src="/assets/creators/ksivlogan1.png"
-                  alt="From rivalry to brothers"
+                  src="/assets/creators/ksiandlogan.png"
+                  alt="KSI and Logan Paul"
                   className="w-full h-auto object-cover transition-all duration-500 group-hover:scale-105"
                 />
-                <div className="p-3 bg-white/[0.02] border-t border-white/5">
-                  <p className="text-center font-bebas uppercase text-white text-xs tracking-wider">
-                    From rivalry to brothers.
-                  </p>
-                </div>
               </div>
+
             </motion.div>
           </div>
 
@@ -106,6 +103,25 @@ export default function AboutPage() {
               >
                 In 2022, former rivals Logan Paul and KSI founded PRIME, setting out to disrupt the sports drink category. They wanted an elite hydration formula that didn't compromise on taste. Through intense collaboration and a shared refusal to settle, they built a brand that speaks to the athletes, creators, and boundary-pushers of today.
               </motion.p>
+
+              {/* Sandwiched Image Section */}
+              <motion.div
+                variants={itemVariants}
+                className="w-full my-8"
+              >
+                <div className="overflow-hidden rounded-xl border border-white/10 group w-full relative max-w-4xl mx-auto shadow-lg">
+                  <img
+                    src="/assets/creators/ksivlogan1.png"
+                    alt="From rivalry to brothers"
+                    className="w-full h-auto object-cover transition-all duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                    <p className="text-center font-bebas uppercase text-white text-lg tracking-widest drop-shadow-md">
+                      From rivalry to brothers.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
 
               <motion.p
                 variants={itemVariants}
@@ -146,6 +162,8 @@ export default function AboutPage() {
 
           </div>
         </div>
+
+
       </section>
 
       {/* Founders Section */}
