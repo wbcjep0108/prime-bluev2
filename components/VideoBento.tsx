@@ -16,12 +16,10 @@ function VideoPanel({
   startTime,
   index,
   isHovered,
-  showPlayHint,
 }: {
   startTime: number;
   index: number;
   isHovered: boolean;
-  showPlayHint?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -106,22 +104,7 @@ function VideoPanel({
         }}
       />
 
-      {/* "Hover to play" hint on first panel only */}
-      {showPlayHint && (
-        <div
-          className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none transition-opacity duration-400"
-          style={{ opacity: isHovered ? 0 : 1 }}
-        >
-          <div className="flex items-center gap-2.5">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="white">
-              <path d="M4 2.5l10 5.5-10 5.5V2.5z" />
-            </svg>
-            <span className="font-bebas uppercase tracking-[0.28em] text-white text-[11px]">
-              Hover to play
-            </span>
-          </div>
-        </div>
-      )}
+
     </motion.div>
   );
 }
@@ -173,7 +156,7 @@ export default function VideoBento() {
       >
         {/* TOP */}
         <div style={{ gridArea: 'top', minHeight: '45vh' }} className="h-full">
-          <VideoPanel startTime={0} index={0} isHovered={isHovered} showPlayHint />
+          <VideoPanel startTime={0} index={0} isHovered={isHovered} />
         </div>
 
         {/* MID LEFT — square */}
@@ -192,16 +175,7 @@ export default function VideoBento() {
         </div>
       </div>
 
-      {/* Caption */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-        className="mt-5 text-center font-bebas uppercase tracking-[0.3em] text-white text-[10px] md:text-xs select-none"
-      >
-        Hover any panel to experience Prime
-      </motion.p>
+
     </section>
   );
 }

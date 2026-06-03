@@ -108,7 +108,7 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Canvas render — EXACT same logic as original ──────────────────────────
+  // ── Canvas render — Optimized for 60fps scrolling ──────────────────────────
   useEffect(() => {
     if (!isLoaded || !canvasRef.current) return;
 
@@ -119,6 +119,7 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
     let rect = canvas.getBoundingClientRect();
     let renderRequested = false;
     let lastRenderedFrame = -1;
+    let latestProgress = smoothProgress.get();
 
     const render = (progress: number, force = false) => {
       if (!mountedRef.current) return;
@@ -140,7 +141,6 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
         ) {
           canvas.width = Math.floor(rect.width * dpr);
           canvas.height = Math.floor(rect.height * dpr);
-          ctx.scale(dpr, dpr);
         }
 
         const hRatio = rect.width / img.width;
@@ -149,11 +149,11 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
         const centerShift_x = (rect.width - img.width * ratio) / 2;
         const centerShift_y = (rect.height - img.height * ratio) / 2;
 
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.fillStyle = '#0066FF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.scale(dpr, dpr);
+        // Set scaling and reset transform in a single call, avoiding separate .scale() overhead
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        
+        // JPEG images are drawn in cover mode (completely covering the canvas),
+        // so we skip the redundant blue fillRect to prevent overdraw and maximize scroll frame rate.
         ctx.drawImage(
           img,
           0, 0,
@@ -165,12 +165,13 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
       renderRequested = false;
     };
 
-    render(smoothProgress.get(), true);
+    render(latestProgress, true);
 
     const unsubscribe = smoothProgress.on('change', (latest) => {
+      latestProgress = latest;
       if (!renderRequested) {
         renderRequested = true;
-        rafRef.current = requestAnimationFrame(() => render(latest));
+        rafRef.current = requestAnimationFrame(() => render(latestProgress));
       }
     });
 
@@ -178,7 +179,7 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
       rect = canvas.getBoundingClientRect();
       if (!renderRequested) {
         renderRequested = true;
-        rafRef.current = requestAnimationFrame(() => render(smoothProgress.get(), true));
+        rafRef.current = requestAnimationFrame(() => render(latestProgress, true));
       }
     };
     window.addEventListener('resize', handleResize, { passive: true });
@@ -196,6 +197,10 @@ export default function HeroCanvas({ onProgress, onLoaded }: HeroCanvasProps) {
         <canvas
           ref={canvasRef}
           className="w-full h-full"
+          style={{
+            transform: 'translate3d(0,0,0)',
+            willChange: 'transform',
+          }}
         />
       </div>
     </div>
