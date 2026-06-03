@@ -7,21 +7,21 @@ import { usePageTransition } from './TransitionProvider';
 
 const footerLinks = {
   'Prime Hydration': [
-    { label: 'Our Story',        href: '#' },
-    { label: 'All Flavors',      href: '/shop?category=All' },
-    { label: 'Energy Series',    href: '/shop?category=Energy' },
-    { label: 'Limited Editions', href: '#' },
+    { label: 'Our Story', href: '/about' },
+    { label: 'All Flavors', href: '/shop?category=All' },
+    { label: 'Energy Series', href: '/shop?category=Energy' },
+    { label: 'Limited Editions', href: '/shop?category=All' },
   ],
   'Shop': [
-    { label: 'Shop Now',         href: '/shop' },
-    { label: 'Subscribe & Save', href: '#' },
-    { label: 'Retail Locator',   href: '#' },
+    { label: 'Shop Now', href: '/shop' },
+    { label: 'Subscribe & Save', href: 'https://www.youtube.com/@primedrink5306' },
+    { label: 'Retail Locator', href: 'https://www.amazon.com/s?k=prime+hydration' },
   ],
   'Connect': [
-    { label: 'Instagram',        href: 'https://www.instagram.com/drinkprime/' },
-    { label: 'Facebook',         href: 'https://www.facebook.com/p/DrinkPrime-100076456194119/' },
-    { label: 'YouTube',          href: 'https://www.youtube.com/@primedrink5306' },
-    { label: 'Twitter / X',      href: 'https://x.com/PrimeHydrate' },
+    { label: 'Instagram', href: 'https://www.instagram.com/drinkprime/' },
+    { label: 'Facebook', href: 'https://www.facebook.com/p/DrinkPrime-100076456194119/' },
+    { label: 'YouTube', href: 'https://www.youtube.com/@primedrink5306' },
+    { label: 'Twitter / X', href: 'https://x.com/PrimeHydrate' },
   ],
 };
 
