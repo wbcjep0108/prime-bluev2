@@ -53,8 +53,8 @@ export default function AuthShell({
           {children}
 
           {switchHref && switchLabel ? (
-            <p className="mt-8 text-center text-sm text-white/60">
-              {switchPrompt}{' '}
+            <p className="mt-8 flex flex-col items-center gap-1 text-center text-sm text-white/60">
+              {switchPrompt ? <span>{switchPrompt}</span> : null}
               <TransitionLink
                 href={switchHref}
                 className="hover-underline font-semibold text-white outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF]/60"

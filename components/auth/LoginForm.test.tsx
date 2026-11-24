@@ -368,6 +368,18 @@ describe('LoginForm', () => {
     });
   });
 
+  it('stacks the footer: "New to Prime?" on its own line above the "Create an account" link', () => {
+    render(<LoginForm onSubmit={vi.fn()} />);
+
+    const prompt = screen.getByText('New to Prime?');
+    const link = screen.getByRole('link', { name: 'Create an account' });
+
+    expect(prompt.parentElement).toBe(link.parentElement);
+    expect(link.parentElement?.className).toContain('flex-col');
+    expect(link.parentElement?.className).toContain('items-center');
+    expect(prompt.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it('keeps a logical keyboard order inside a real form', () => {
     render(<LoginForm onSubmit={vi.fn()} />);
 

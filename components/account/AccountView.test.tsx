@@ -75,6 +75,22 @@ describe('AccountView', () => {
       expect(screen.queryByText(/not logged in/i)).toBeNull();
     });
 
+    it('puts Log out below the details, in a stacked footer with the prompt above it', async () => {
+      render(<AccountView />);
+
+      const email = await screen.findByText('jo@example.com');
+      const logout = screen.getByRole('button', { name: 'Log out' });
+      const prompt = screen.getByText('Done for now?');
+
+      // The prompt and the action are separate lines in one centered column.
+      expect(prompt.parentElement).toBe(logout.parentElement);
+      expect(logout.parentElement?.className).toContain('flex-col');
+      expect(logout.parentElement?.className).toContain('items-center');
+      expect(prompt.compareDocumentPosition(logout) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      // The footer comes after the user's details in the page.
+      expect(email.compareDocumentPosition(prompt) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
     it('logs out and goes to /login', async () => {
       submitLogoutMock.mockResolvedValue({ ok: true } satisfies AuthResult);
       render(<AccountView />);

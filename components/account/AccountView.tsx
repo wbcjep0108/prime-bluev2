@@ -99,23 +99,21 @@ export default function AccountView() {
               <dd className="break-all text-base text-white">{state.user.email}</dd>
             </div>
           </dl>
+        </div>
 
+        {/* Same stacked footer as the login and register pages: prompt above, action below. */}
+        <p className="mt-8 flex flex-col items-center gap-1 text-center text-sm text-white/60">
+          <span>Done for now?</span>
           <button
             type="button"
             onClick={handleLogout}
             disabled={loggingOut}
             aria-busy={loggingOut}
-            className={PRIMARY_BUTTON_CLASS}
+            className="hover-underline font-semibold text-white outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF]/60 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {loggingOut ? (
-              <span
-                aria-hidden="true"
-                className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black"
-              />
-            ) : null}
             {loggingOut ? 'Logging out...' : 'Log out'}
           </button>
-        </div>
+        </p>
       </AuthShell>
     );
   }
