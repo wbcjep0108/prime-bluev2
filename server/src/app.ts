@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import { env } from './config/env.js';
@@ -10,8 +11,10 @@ export function createApp() {
 
   app.disable('x-powered-by');
   app.use(helmet());
-  app.use(cors({ origin: env.clientUrl }));
+  // A single explicit origin is required for credentialed requests. Never a wildcard.
+  app.use(cors({ origin: env.clientUrl, credentials: true }));
   app.use(express.json({ limit: '1mb' }));
+  app.use(cookieParser());
 
   app.use('/api/v1', routes);
 

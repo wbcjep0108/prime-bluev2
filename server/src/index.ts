@@ -2,6 +2,7 @@ import type { Server } from 'node:http';
 import { env } from './config/env.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
 import { createApp } from './app.js';
+import { User } from './models/User.js';
 
 async function main() {
   if (env.mongodbUri) {
@@ -12,6 +13,17 @@ async function main() {
       // Never print the URI: it contains credentials.
       console.error(
         `[db] failed to connect: ${err instanceof Error ? err.message : String(err)}`,
+      );
+      process.exit(1);
+    }
+
+    try {
+      // Build the unique email index before serving requests, so duplicate
+      // signups are always rejected by the database.
+      await User.init();
+    } catch (err) {
+      console.error(
+        `[db] failed to build User indexes: ${err instanceof Error ? err.message : String(err)}`,
       );
       process.exit(1);
     }
