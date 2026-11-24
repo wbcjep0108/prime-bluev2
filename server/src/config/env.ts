@@ -6,7 +6,13 @@ export interface Env {
   clientUrl: string;
   /** Empty string when MONGODB_URI is not configured. */
   mongodbUri: string;
+  /** Secret used to sign session JWTs. Required. */
+  jwtSecret: string;
+  /** Google OAuth client ID. ID tokens must have this as their audience. Required. */
+  googleClientId: string;
 }
+
+const JWT_SECRET_MIN_LENGTH = 32;
 
 function fail(message: string): never {
   throw new Error(`[env] ${message}`);
@@ -38,7 +44,26 @@ function loadEnv(): Env {
     fail('MONGODB_URI is required when NODE_ENV=production');
   }
 
-  return { nodeEnv, port, clientUrl, mongodbUri };
+  const jwtSecret = process.env.JWT_SECRET?.trim() ?? '';
+  if (!jwtSecret) {
+    fail(
+      'JWT_SECRET is required. Add JWT_SECRET to server/.env (a random string of at least ' +
+        `${JWT_SECRET_MIN_LENGTH} characters).`,
+    );
+  }
+  if (jwtSecret.length < JWT_SECRET_MIN_LENGTH) {
+    fail(`JWT_SECRET must be at least ${JWT_SECRET_MIN_LENGTH} characters long`);
+  }
+
+  const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim() ?? '';
+  if (!googleClientId) {
+    fail(
+      'GOOGLE_CLIENT_ID is required. Add GOOGLE_CLIENT_ID to server/.env ' +
+        '(the OAuth client ID from the Google Cloud console, not the client secret).',
+    );
+  }
+
+  return { nodeEnv, port, clientUrl, mongodbUri, jwtSecret, googleClientId };
 }
 
 function loadEnvOrExit(): Env {
