@@ -164,6 +164,7 @@ export default function LoginForm({ onSubmit = submitLogin, onGoogle = loginWith
         disabled={submitting}
         onCredential={(credential) => void run(() => onGoogle(credential))}
         onError={setFormError}
+        text="signin_with"
       />
     </AuthShell>
   );

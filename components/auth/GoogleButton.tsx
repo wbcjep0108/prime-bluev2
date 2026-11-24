@@ -5,7 +5,7 @@ import Script from 'next/script';
 import { GOOGLE_CLIENT_ID } from '../../lib/api/config';
 import { cn } from '../../lib/utils';
 
-const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
+const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client?hl=en';
 const LOAD_ERROR_MESSAGE = 'Google sign-in could not be loaded. Please use your email instead.';
 
 // Minimal typing for the part of Google Identity Services this component uses.
@@ -24,12 +24,16 @@ interface GoogleIdApi {
       type: 'standard';
       theme: 'outline' | 'filled_blue' | 'filled_black';
       size: 'large' | 'medium' | 'small';
-      text: 'continue_with' | 'signin_with' | 'signup_with';
+      text: GoogleButtonText;
       shape: 'pill' | 'rectangular';
       width: number;
+      locale: string;
     },
   ) => void;
 }
+
+/** The label Google prints on its button. Login uses "signin_with", register "signup_with". */
+export type GoogleButtonText = 'continue_with' | 'signin_with' | 'signup_with';
 
 type GoogleWindow = Window & { google?: { accounts?: { id?: GoogleIdApi } } };
 
@@ -49,9 +53,20 @@ const DEFAULT_WIDTH = 320;
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 400;
 
-function drawButton(container: HTMLElement | null, clientId: string): void {
+/** Google sizes its button in pixels, so use the width the form gives the container. */
+function widthFor(container: HTMLElement): number {
+  const measured = Math.round(container.clientWidth);
+  return measured > 0 ? Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, measured)) : DEFAULT_WIDTH;
+}
+
+/** Draws Google's button into the container. Returns the width used, or null if nothing was drawn. */
+function drawButton(
+  container: HTMLElement | null,
+  clientId: string,
+  text: GoogleButtonText,
+): number | null {
   const api = getGoogleApi();
-  if (!api || !container) return;
+  if (!api || !container) return null;
 
   if (initializedFor !== api) {
     api.initialize({
@@ -63,18 +78,18 @@ function drawButton(container: HTMLElement | null, clientId: string): void {
     initializedFor = api;
   }
 
-  // Google sizes its button in pixels, so match the space the form gives it.
-  const measured = container.clientWidth;
-  const width = measured > 0 ? Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, measured)) : DEFAULT_WIDTH;
+  const width = widthFor(container);
 
   api.renderButton(container, {
     type: 'standard',
     theme: 'outline',
     size: 'large',
-    text: 'continue_with',
+    text,
     shape: 'pill',
     width,
+    locale: 'en',
   });
+  return width;
 }
 
 interface GoogleButtonProps {
@@ -86,6 +101,8 @@ interface GoogleButtonProps {
   disabled?: boolean;
   /** Defaults to NEXT_PUBLIC_GOOGLE_CLIENT_ID. */
   clientId?: string;
+  /** Wording on Google's button: "signin_with" for login, "signup_with" for register. */
+  text?: GoogleButtonText;
 }
 
 /**
@@ -99,9 +116,12 @@ export default function GoogleButton({
   onError,
   disabled = false,
   clientId = GOOGLE_CLIENT_ID,
+  text = 'signin_with',
 }: GoogleButtonProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const credentialRef = useRef(onCredential);
+  // Width of the button Google last drew, so a resize only redraws when it matters.
+  const drawnWidthRef = useRef<number | null>(null);
 
   useEffect(() => {
     credentialRef.current = onCredential;
@@ -117,13 +137,30 @@ export default function GoogleButton({
   }, []);
 
   const draw = useCallback(() => {
-    if (clientId) drawButton(containerRef.current, clientId);
-  }, [clientId]);
+    if (!clientId) return;
+    const width = drawButton(containerRef.current, clientId, text);
+    if (width !== null) drawnWidthRef.current = width;
+  }, [clientId, text]);
 
   // The script may already be on the page from an earlier visit to this form.
   useEffect(() => {
     draw();
   }, [draw]);
+
+  // Google's button has a fixed pixel width, so redraw it if the card changes
+  // size (a rotated phone, a resized window) to keep it matching the card.
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || typeof ResizeObserver === 'undefined') return;
+
+    const observer = new ResizeObserver(() => {
+      if (drawnWidthRef.current !== null && widthFor(container) !== drawnWidthRef.current) {
+        draw();
+      }
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [draw, clientId]);
 
   if (!clientId) return null;
 

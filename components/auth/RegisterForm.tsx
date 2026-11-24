@@ -253,6 +253,7 @@ export default function RegisterForm({
           disabled={submitting}
           onCredential={(credential) => void run(() => onGoogle(credential))}
           onError={setFormError}
+          text="signup_with"
         />
       )}
     </AuthShell>

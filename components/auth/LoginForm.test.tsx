@@ -24,10 +24,18 @@ vi.mock('../../lib/auth/api', () => ({
 vi.mock('./GoogleButton', async () => {
   const { createElement } = await import('react');
   return {
-    default: ({ onCredential, disabled }: { onCredential: (c: string) => void; disabled?: boolean }) =>
+    default: ({
+      onCredential,
+      disabled,
+      text,
+    }: {
+      onCredential: (c: string) => void;
+      disabled?: boolean;
+      text?: string;
+    }) =>
       createElement(
         'button',
-        { type: 'button', disabled, onClick: () => onCredential('google-token') },
+        { type: 'button', disabled, 'data-text': text, onClick: () => onCredential('google-token') },
         'Mock Google',
       ),
   };
@@ -269,6 +277,12 @@ describe('LoginForm', () => {
   });
 
   describe('Google sign-in', () => {
+    it('asks Google to word its button "Sign in with Google"', () => {
+      render(<LoginForm onSubmit={vi.fn()} onGoogle={vi.fn()} />);
+
+      expect(googleButton().getAttribute('data-text')).toBe('signin_with');
+    });
+
     it('sends the credential to onGoogle and redirects to / on success', async () => {
       const onGoogle = vi.fn().mockResolvedValue({
         ok: true,
