@@ -398,6 +398,17 @@ describe('RegisterForm', () => {
     });
   });
 
+  it('stacks the footer: "Already have an account?" on its own line above the "Log in" link', () => {
+    render(<RegisterForm onSubmit={vi.fn()} />);
+
+    const prompt = screen.getByText('Already have an account?');
+    const link = screen.getByRole('link', { name: 'Log in' });
+
+    expect(prompt.parentElement).toBe(link.parentElement);
+    expect(link.parentElement?.className).toContain('flex-col');
+    expect(prompt.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it('keeps a logical keyboard order', () => {
     render(<RegisterForm onSubmit={vi.fn()} />);
 

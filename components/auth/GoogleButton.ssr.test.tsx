@@ -14,8 +14,21 @@ describe('GoogleButton during server rendering', () => {
   it('renders without touching window when a client id is set', () => {
     const html = renderToString(<GoogleButton clientId="test-id" onCredential={() => {}} />);
 
-    expect(html).toContain('Continue with Google');
+    expect(html).toContain('Sign in with Google');
     expect(html).toContain('>or<');
+    expect(html).toContain('data-google-face');
+    expect(html).toContain('data-google-overlay');
+  });
+
+  it('prerenders the sign-up wording and the four-colour logo', () => {
+    const html = renderToString(
+      <GoogleButton clientId="test-id" text="signup_with" onCredential={() => {}} />,
+    );
+
+    expect(html).toContain('Sign up with Google');
+    for (const color of ['#EA4335', '#4285F4', '#FBBC05', '#34A853']) {
+      expect(html).toContain(color);
+    }
   });
 
   it('renders nothing without a client id', () => {

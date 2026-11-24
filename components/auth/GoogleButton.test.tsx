@@ -60,15 +60,16 @@ describe('GoogleButton', () => {
       src: 'https://accounts.google.com/gsi/client?hl=en',
       strategy: 'afterInteractive',
     });
-    expect(container.textContent).toBe('or');
-    expect(getByRole('group', { name: 'Continue with Google' })).toBeTruthy();
+    // The divider word, then the visible face label. Nothing else is rendered.
+    expect(container.textContent).toBe('orSign in with Google');
+    expect(getByRole('group', { name: 'Sign in with Google' })).toBeTruthy();
   });
 
   it('initialises Google and asks it to render its own button once the script is ready', () => {
     const api = installFakeGoogle();
     // Simulate the script arriving after mount: remove it, render, then add it back.
     delete googleWindow.google;
-    const { getByRole } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+    const { container } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
     expect(api.renderButton).not.toHaveBeenCalled();
 
     googleWindow.google = { accounts: { id: api } };
@@ -79,7 +80,9 @@ describe('GoogleButton', () => {
 
     expect(api.renderButton).toHaveBeenCalledTimes(1);
     const [parent, options] = api.renderButton.mock.calls[0];
-    expect(parent).toBe(getByRole('group', { name: 'Continue with Google' }));
+    // Google draws into the container inside the invisible overlay, never into the visible face.
+    expect(parent.closest('[data-google-overlay]')).toBe(container.querySelector('[data-google-overlay]'));
+    expect(parent.closest('[data-google-face]')).toBeNull();
     expect(options).toMatchObject({
       type: 'standard',
       theme: 'outline',
@@ -288,23 +291,150 @@ describe('GoogleButton', () => {
     expect(onError.mock.calls[0][0]).toMatch(/could not be loaded/i);
   });
 
-  it('is blocked while disabled', () => {
-    const { getByRole, rerender } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
-    expect(getByRole('group').getAttribute('aria-disabled')).toBeNull();
+  describe('visible face and invisible overlay', () => {
+    const tokens = (el: Element) => el.className.toString().split(/\s+/);
+    const faceOf = (container: HTMLElement) => container.querySelector('[data-google-face]') as HTMLElement;
+    const overlayOf = (container: HTMLElement) => container.querySelector('[data-google-overlay]') as HTMLElement;
 
-    rerender(<GoogleButton clientId="test-id" onCredential={vi.fn()} disabled />);
-    const group = getByRole('group');
-    expect(group.getAttribute('aria-disabled')).toBe('true');
-    expect(group.className).toContain('pointer-events-none');
-  });
+    it('words the face from the text prop and gives the group the same accessible name', () => {
+      const cases = [
+        ['signin_with', 'Sign in with Google'],
+        ['signup_with', 'Sign up with Google'],
+        ['continue_with', 'Continue with Google'],
+      ] as const;
 
-  it('never draws its own Google logo or button', () => {
-    installFakeGoogle();
-    const { container } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+      for (const [text, label] of cases) {
+        const { container, getByRole, unmount } = render(
+          <GoogleButton clientId="test-id" text={text} onCredential={vi.fn()} />,
+        );
+        expect(faceOf(container).textContent, text).toBe(label);
+        expect(getByRole('group', { name: label }), text).toBeTruthy();
+        unmount();
+      }
+    });
 
-    // Google renders the real button into the empty container. This component
-    // adds no icon, image or button of its own.
-    expect(container.querySelector('svg, img, button')).toBeNull();
-    expect(container.querySelector('[role="group"]')?.childElementCount).toBe(0);
+    it('is a relative wrapper as tall as the Log In button (44px), and the face fills it', () => {
+      const { container, getByRole } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+
+      for (const token of ['group', 'relative', 'h-11', 'w-full', 'rounded-full']) {
+        expect(tokens(getByRole('group')), token).toContain(token);
+      }
+      for (const token of ['h-full', 'w-full', 'rounded-full']) {
+        expect(tokens(faceOf(container)), token).toContain(token);
+      }
+    });
+
+    it('gives the face the same look as the Log In button: white pill, bold uppercase black text', () => {
+      const { container } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+
+      for (const token of [
+        'bg-white',
+        'rounded-full',
+        'px-7',
+        'gap-3',
+        'text-xs',
+        'font-bold',
+        'uppercase',
+        'tracking-widest',
+        'text-black',
+      ]) {
+        expect(tokens(faceOf(container)), token).toContain(token);
+      }
+    });
+
+    it('shows the four-colour Google "G" left of the label, hidden from assistive technology', () => {
+      const { container } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+      const face = faceOf(container);
+      const svg = face.querySelector('svg') as SVGSVGElement;
+
+      expect(svg).toBeTruthy();
+      expect(svg.getAttribute('aria-hidden')).toBe('true');
+      expect(svg.getAttribute('focusable')).toBe('false');
+      expect(svg.getAttribute('viewBox')).toBe('0 0 48 48');
+      expect(Array.from(svg.querySelectorAll('path')).map((p) => p.getAttribute('fill'))).toEqual([
+        '#EA4335',
+        '#4285F4',
+        '#FBBC05',
+        '#34A853',
+      ]);
+      // The logo comes before the label.
+      expect(face.firstElementChild).toBe(svg);
+      expect(face.lastElementChild?.textContent).toBe('Sign in with Google');
+    });
+
+    it('keeps the face as decoration only: hidden from assistive technology and not focusable', () => {
+      const { container } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+      const face = faceOf(container);
+
+      expect(face.getAttribute('aria-hidden')).toBe('true');
+      expect(face.querySelector('a, button, input, select, textarea, [tabindex], [role="button"]')).toBeNull();
+    });
+
+    it('lays Google\'s button over the whole face, almost invisible, and on top', () => {
+      const { container } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+      const overlay = overlayOf(container);
+      const face = faceOf(container);
+
+      for (const token of ['absolute', 'inset-0', 'z-10', 'cursor-pointer', 'overflow-hidden', 'opacity-[0.01]']) {
+        expect(tokens(overlay), token).toContain(token);
+      }
+      // It is a sibling after the face, so it paints above it, and the face is not inside it.
+      expect(overlay.contains(face)).toBe(false);
+      expect(face.compareDocumentPosition(overlay) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it('stretches Google\'s 40px button to the 44px height of the face', () => {
+      installFakeGoogle();
+      const { container } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+      const target = overlayOf(container).firstElementChild as HTMLElement;
+
+      expect(target.style.height).toBe('40px');
+      expect(target.style.transform).toBe('scaleY(1.1)');
+      // The stretch grows downward from the top-left corner. jsdom may write the
+      // two keywords in either order, so compare them as a set.
+      expect(target.style.transformOrigin.split(' ').sort()).toEqual(['left', 'top']);
+    });
+
+    it('copies the Log In hover effect through the group and uses a cyan focus-within ring', () => {
+      const { container, getByRole } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+
+      for (const token of [
+        'focus-within:ring-2',
+        'focus-within:ring-[#00E5FF]',
+        'focus-within:ring-offset-2',
+        'focus-within:ring-offset-[#080808]',
+      ]) {
+        expect(tokens(getByRole('group')), token).toContain(token);
+      }
+      for (const token of ['transition-all', 'duration-300', 'group-hover:scale-[1.02]', 'group-active:scale-95']) {
+        expect(tokens(faceOf(container)), token).toContain(token);
+      }
+    });
+
+    it('dims the face and blocks pointer events on the overlay while disabled', () => {
+      const { container, getByRole, rerender } = render(
+        <GoogleButton clientId="test-id" onCredential={vi.fn()} />,
+      );
+      expect(getByRole('group').getAttribute('aria-disabled')).toBeNull();
+      expect(tokens(overlayOf(container))).not.toContain('pointer-events-none');
+      expect(tokens(faceOf(container))).not.toContain('opacity-60');
+
+      rerender(<GoogleButton clientId="test-id" onCredential={vi.fn()} disabled />);
+
+      expect(getByRole('group').getAttribute('aria-disabled')).toBe('true');
+      expect(tokens(getByRole('group'))).toContain('cursor-not-allowed');
+      expect(tokens(overlayOf(container))).toContain('pointer-events-none');
+      expect(tokens(faceOf(container))).toContain('opacity-60');
+      // No hover growth while disabled.
+      expect(tokens(faceOf(container))).not.toContain('group-hover:scale-[1.02]');
+    });
+
+    it('still renders the real Google button only inside the overlay when disabled', () => {
+      const api = installFakeGoogle();
+      const { container } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} disabled />);
+
+      const [parent] = api.renderButton.mock.calls[0];
+      expect(parent.closest('[data-google-overlay]')).toBe(overlayOf(container));
+    });
   });
 });
