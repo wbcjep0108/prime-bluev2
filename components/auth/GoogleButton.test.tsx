@@ -55,8 +55,9 @@ describe('GoogleButton', () => {
   it('loads the Google Identity Services script with next/script and shows the divider', () => {
     const { container, getByRole } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
 
+    // hl=en keeps Google's button text in English regardless of the browser language.
     expect(scriptProps.current).toMatchObject({
-      src: 'https://accounts.google.com/gsi/client',
+      src: 'https://accounts.google.com/gsi/client?hl=en',
       strategy: 'afterInteractive',
     });
     expect(container.textContent).toBe('or');
@@ -83,10 +84,129 @@ describe('GoogleButton', () => {
       type: 'standard',
       theme: 'outline',
       size: 'large',
-      text: 'continue_with',
+      text: 'signin_with',
       shape: 'pill',
+      locale: 'en',
     });
     expect(typeof options.width).toBe('number');
+  });
+
+  describe('options', () => {
+    it('uses "signin_with" by default and "signup_with" when asked', () => {
+      const api = installFakeGoogle();
+
+      const first = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+      expect(api.renderButton.mock.calls[0][1].text).toBe('signin_with');
+      first.unmount();
+
+      render(<GoogleButton clientId="test-id" text="signup_with" onCredential={vi.fn()} />);
+      expect(api.renderButton.mock.calls[1][1].text).toBe('signup_with');
+    });
+
+    it('always asks for the English locale, the pill shape and the large size', () => {
+      const api = installFakeGoogle();
+
+      render(<GoogleButton clientId="test-id" text="signup_with" onCredential={vi.fn()} />);
+
+      expect(api.renderButton.mock.calls[0][1]).toMatchObject({
+        locale: 'en',
+        shape: 'pill',
+        size: 'large',
+      });
+    });
+
+    it('redraws with the new wording if the text prop changes', () => {
+      const api = installFakeGoogle();
+      const { rerender } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+
+      rerender(<GoogleButton clientId="test-id" text="signup_with" onCredential={vi.fn()} />);
+
+      const last = api.renderButton.mock.calls.at(-1)![1];
+      expect(last.text).toBe('signup_with');
+    });
+  });
+
+  describe('width', () => {
+    let clientWidth: { mockReturnValue: (value: number) => unknown; mockRestore: () => void };
+
+    afterEach(() => {
+      clientWidth.mockRestore();
+    });
+
+    function widthDrawnFor(measured: number): number {
+      clientWidth = vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(measured);
+      const api = installFakeGoogle();
+      render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+      return api.renderButton.mock.calls[0][1].width;
+    }
+
+    it('matches the container width at card widths used on desktop and phone', () => {
+      expect(widthDrawnFor(366)).toBe(366);
+      cleanup();
+      clientWidth.mockRestore();
+      expect(widthDrawnFor(262)).toBe(262);
+    });
+
+    it('stays within the range Google allows (200 to 400 pixels)', () => {
+      expect(widthDrawnFor(150)).toBe(200);
+      cleanup();
+      clientWidth.mockRestore();
+      expect(widthDrawnFor(900)).toBe(400);
+    });
+
+    it('falls back to a default width when the container has no measurable width', () => {
+      expect(widthDrawnFor(0)).toBe(320);
+    });
+
+    describe('when the card is resized', () => {
+      type ObserverCallback = () => void;
+      const observers: { callback: ObserverCallback; disconnect: ReturnType<typeof vi.fn> }[] = [];
+
+      beforeEach(() => {
+        observers.length = 0;
+        vi.stubGlobal(
+          'ResizeObserver',
+          class {
+            disconnect = vi.fn();
+            observe = vi.fn();
+            constructor(callback: ObserverCallback) {
+              observers.push({ callback, disconnect: this.disconnect });
+            }
+          },
+        );
+      });
+
+      afterEach(() => {
+        vi.unstubAllGlobals();
+      });
+
+      it('redraws at the new width, and only when the width really changed', () => {
+        clientWidth = vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(366);
+        const api = installFakeGoogle();
+        render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+        expect(api.renderButton).toHaveBeenCalledTimes(1);
+
+        // Same width: nothing to do.
+        observers[0].callback();
+        expect(api.renderButton).toHaveBeenCalledTimes(1);
+
+        // The card shrinks to phone width: Google's fixed-pixel button is redrawn to match.
+        clientWidth.mockReturnValue(262);
+        observers[0].callback();
+        expect(api.renderButton).toHaveBeenCalledTimes(2);
+        expect(api.renderButton.mock.calls[1][1].width).toBe(262);
+      });
+
+      it('does not draw on resize before Google has loaded, and stops observing on unmount', () => {
+        clientWidth = vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(366);
+        const { unmount } = render(<GoogleButton clientId="test-id" onCredential={vi.fn()} />);
+
+        expect(() => observers[0].callback()).not.toThrow();
+
+        unmount();
+        expect(observers[0].disconnect).toHaveBeenCalled();
+      });
+    });
   });
 
   it('draws the button immediately when the script is already on the page', () => {
